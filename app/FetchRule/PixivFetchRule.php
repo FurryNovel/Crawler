@@ -1,0 +1,152 @@
+<?php
+
+namespace App\FetchRule;
+
+use App\FetchRule\FetchRule;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
+
+/**
+ * @throws GuzzleException
+ */
+class PixivFetchRule extends FetchRule {
+	static function getType(): string {
+		return 'pixiv';
+	}
+	
+	function getRequest(): Client {
+		return new Client([
+			'base_uri' => 'https://www.pixiv.net/',
+			'timeout' => 15,
+		]);
+	}
+	
+	function fetchNovelList(string $page = '1'): array {
+		//https://www.pixiv.net/ajax/search/novels/%E3%82%B1%E3%83%A2%E3%83%9B%E3%83%A2?word=%E3%82%B1%E3%83%A2%E3%83%9B%E3%83%A2&order=date_d&mode=all&p=1&s_mode=s_tag_full&work_lang=zh-cn&gs=1&lang=zh&version=42055d64ddbad5c0a69639e157b82e921bf63b31
+		$response = $this->getRequest()
+			->post('/ajax/search/novels/%E3%82%B1%E3%83%A2%E3%83%9B%E3%83%A2', [
+				'params' => [
+					'word' => '%E3%82%B1%E3%83%A2%E3%83%9B%E3%83%A2',
+					'order' => 'date_d',
+					'mode' => 'all',
+					's_mode' => 's_tag_full',
+					'work_lang' => 'zh-cn',
+					'gs' => 1,
+					'lang' => 'zh',
+					'version' => '42055d64ddbad5c0a69639e157b82e921bf63b31',
+					'p' => $page,
+				],
+			]);
+		$response = json_decode($response->getBody()->getContents(), true);
+		$data = $response['body']['novel']['data'];
+		return array_map(function ($novel) {
+			$tags = $novel['tags'];
+			if ($novel['aiType']) {
+				$tags[] = 'AI生成';
+			}
+			return new NovelInfo(
+				$novel['id'],
+				$novel['title'],
+				$novel['userName'],
+				$novel['userId'],
+				$novel['cover']['urls']['original'],
+				$novel['desc'],
+				$tags
+			);
+		}, $data);
+	}
+	
+	function fetchNovelDetail(string $novelId): NovelInfo {
+		//https://www.pixiv.net/ajax/novel/series/10579180?lang=zh&version=42055d64ddbad5c0a69639e157b82e921bf63b31
+		$response = $this->getRequest()->get('/ajax/novel/series/' . $novelId, [
+			'query' => [
+				'lang' => 'zh',
+				'version' => '42055d64ddbad5c0a69639e157b82e921bf63b31',
+			],
+		]);
+		$response = json_decode($response->getBody()->getContents(), true);
+		$novel = $response['body'];
+		$tags = $novel['tags'];
+		if ($novel['aiType']) {
+			$tags[] = 'AI生成';
+		}
+		return new NovelInfo(
+			$novel['id'],
+			$novel['title'],
+			$novel['userName'],
+			$novel['userId'],
+			$novel['cover']['urls']['original'],
+			$novel['desc'],
+			$tags
+		);
+	}
+	
+	function fetchChapterList(string $novelId, string $page = '1'): array {
+		//https://www.pixiv.net/ajax/novel/series_content/10579180?limit=30&last_order=0&order_by=asc&lang=zh&version=42055d64ddbad5c0a69639e157b82e921bf63b31
+		$response = $this->getRequest()->get('/ajax/novel/series_content/' . $novelId, [
+			'query' => [
+				'limit' => 30 * intval($page),
+				'last_order' => 30 * (intval($page) - 1),
+				'order_by' => 'asc',
+				'lang' => 'zh',
+				'version' => '42055d64ddbad5c0a69639e157b82e921bf63b31'
+			],
+		]);
+		$response = json_decode($response->getBody()->getContents(), true);
+		return array_map(function ($chapter) {
+			$tags = $chapter['tags'];
+			switch ($chapter['xRestrict']){
+				case 0:
+					$tags[] = 'SFW';
+					break;
+				case 1:
+					$tags[] = 'R18';
+					break;
+				case 2:
+					$tags[] = 'R18G';
+					break;
+				default:
+					break;
+			}
+			return new ChapterInfo(
+				$chapter['id'],
+				$chapter['title'],
+				$chapter['url'],
+				$chapter['textCount'],
+				$chapter['wordCount'],
+				$tags
+			);
+		}, $response['body']['thumbnails']['novel']);
+	}
+
+	function fetchChapterContent(string $novelId, string $chapterId): string {
+		//https://www.pixiv.net/ajax/novel/20065569?lang=zh&version=42055d64ddbad5c0a69639e157b82e921bf63b31
+		$response = $this->getRequest()->get('/ajax/novel/'. $chapterId, [
+			'query' => [
+				'lang' => 'zh',
+				'version' => '42055d64ddbad5c0a69639e157b82e921bf63b31',
+			],
+		]);
+		$response = json_decode($response->getBody()->getContents(), true);
+		return $response['body']['content'];
+	}
+	
+	function fetchAuthorInfo(string $authorId): AuthorInfo {
+		//https://www.pixiv.net/ajax/user/3337300?full=1&lang=zh&version=42055d64ddbad5c0a69639e157b82e921bf63b31
+		$response = $this->getRequest()->get('/ajax/user/'. $authorId, [
+			'query' => [
+				'full' => 1,
+				'lang' => 'zh',
+				'version' => '42055d64ddbad5c0a69639e157b82e921bf63b31',
+			],
+		]);
+		$response = json_decode($response->getBody()->getContents(), true);
+		$response = $response['body'];
+		return new AuthorInfo(
+			$response['userId'],
+			$response['imageBig'],
+			$response['name'],
+			$response['comment']
+		);
+	}
+}
