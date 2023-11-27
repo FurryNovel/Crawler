@@ -12,14 +12,23 @@ declare(strict_types = 1);
 
 namespace App\Controller;
 
+use App\Controller\Abstract\Controller;
 use App\FetchRule\FetchRule;
+use Hyperf\HttpServer\Annotation\AutoController;
 
-class IndexController extends AbstractController {
+#[AutoController]
+class IndexController extends Controller {
 	public function index(): array {
 		
 		return [
 			'text' => FetchRule::getRule('pixiv')
 				->fetchChapterContent('', '20065569'),
+		];
+	}
+	
+	public function test(): array {
+		return [
+			'text' => 'connection',
 		];
 	}
 }

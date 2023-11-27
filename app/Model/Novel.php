@@ -17,17 +17,21 @@ use Hyperf\Database\Model\Relations\HasOne;
  * @property string $desc 描述
  * @property array $tags 标签
  * @property string $source 来源
+ * @property array $ext_data 额外信息
  * @property int $view_count 阅读量
  * @property float $furry_weight furry权重
  * @property string $status 状态
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ * @property Carbon $fetched_at 获取时间
  */
 class Novel extends Model {
 	protected ?string $table = 'novel';
 	
 	protected array $casts = [
 		'tags' => 'json',
+		'ext_data' => 'json',
+		'fetched_at' => 'timestamp',
 	];
 	
 	public function author(): HasOne {

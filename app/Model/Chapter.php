@@ -18,10 +18,14 @@ use Hyperf\Database\Model\Relations\HasOne;
  * @property int $text_count
  * @property int $word_count
  * @property string $status 状态
+ * @property string $source_id 来源ID
  * @property Carbon $created_at
  * @property Carbon $updated_at
  */
 class Chapter extends Model {
+	const STATUS_PENDING = 'pending';
+	const STATUS_PUBLISH = 'publish';
+	
 	protected ?string $table = 'chapter';
 	
 	protected array $casts = [

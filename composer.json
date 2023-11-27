@@ -14,6 +14,7 @@
     "require": {
         "php": ">=8.0",
         "guzzlehttp/guzzle": "^7.8",
+        "hyperf/async-queue": "^3.0",
         "hyperf/cache": "~3.0.0",
         "hyperf/command": "~3.0.0",
         "hyperf/config": "~3.0.0",
@@ -26,6 +27,8 @@
         "hyperf/http-server": "~3.0.0",
         "hyperf/logger": "~3.0.0",
         "hyperf/memory": "~3.0.0",
+        "hyperf/model-cache": "^3.0",
+        "hyperf/paginator": "^3.0",
         "hyperf/process": "~3.0.0",
         "hyperf/redis": "~3.0.0"
     },
