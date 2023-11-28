@@ -28,7 +28,7 @@ class FetchUpdateNovelTask {
 				if (!$rule) {
 					continue;
 				}
-				$chapterList = $rule->fetchChapterList($novel->id);
+				$chapterList = $rule->fetchChapterList($novel->ext_data['source_id']);
 				foreach ($chapterList as $chapter) {
 					if (Chapter::where('source_id', $chapter->id)->first()) {
 						continue;

@@ -35,8 +35,26 @@ class User extends Model implements Authenticatable {
 		'ext_data' => 'json',
 	];
 	
-	protected static function booted(): void {
+	protected array $hidden = [
+		'password',
+		'ext_data',
+	];
+	
+	protected function boot(): void {
+		parent::boot();
 		static::addGlobalScope(new UserScope);
 	}
 	
+	function change_password(string $password): void {
+		$this->password = password_hash($password, PASSWORD_DEFAULT);
+		$this->save();
+	}
+	
+	static function login(string $username, string $password): ?User {
+		$user = User::query()->where('name', $username)->first();
+		if (!$user or !password_verify($password, $user->password)) {
+			return null;
+		}
+		return $user;
+	}
 }
