@@ -10,7 +10,7 @@ class UserService {
 	#[Inject]
 	protected AuthManager $authService;
 	
-	function current_user(): ?User {
+	function getCurrent(): ?User {
 		if (!$this->authService->guard()->check()) {
 			return null;
 		}
