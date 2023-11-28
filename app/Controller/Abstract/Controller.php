@@ -15,6 +15,8 @@ namespace App\Controller\Abstract;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\HttpServer\Contract\ResponseInterface;
+use Hyperf\Paginator\LengthAwarePaginator;
+use Hyperf\Paginator\Paginator;
 use Psr\Container\ContainerInterface;
 
 abstract class Controller {
@@ -27,6 +29,17 @@ abstract class Controller {
 	
 	
 	protected function success($data = null, $message = 'success', $code = 200): array {
+		if ($data instanceof LengthAwarePaginator) {
+			return [
+				'code' => $code,
+				'message' => $message,
+				'page' => $data->currentPage(),
+				'pageSize' => $data->perPage(),
+				'total' => $data->total(),
+				'count' => $data->count(),
+				'data' => $data->items()
+			];
+		}
 		return [
 			'code' => $code,
 			'message' => $message,

@@ -14,7 +14,9 @@ namespace App\Exception\Handler;
 
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\ExceptionHandler\ExceptionHandler;
+use Hyperf\HttpMessage\Exception\NotFoundHttpException;
 use Hyperf\HttpMessage\Stream\SwooleStream;
+use Hyperf\HttpServer\Exception\Handler\HttpExceptionHandler;
 use Psr\Http\Message\ResponseInterface;
 use Throwable;
 use function Hyperf\Support\env;
@@ -31,7 +33,9 @@ class AppExceptionHandler extends ExceptionHandler {
 			'message' => $throwable->getMessage(),
 		];
 		
-		if (env('APP_ENV') == 'dev'){
+		if ($throwable instanceof NotFoundHttpException) {
+			$data['code'] = 404;
+		} else if (env('APP_ENV') == 'dev') {
 			$data['file'] = $throwable->getFile();
 			$data['line'] = $throwable->getLine();
 			$data['traces'] = $throwable->getTrace();
