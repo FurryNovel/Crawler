@@ -45,7 +45,11 @@ class User extends Model implements Authenticatable {
 		static::addGlobalScope(new UserScope);
 	}
 	
-	function change_password(string $password): void {
+	function checkPassword(string $password): bool {
+		return password_verify($password, $this->password);
+	}
+	
+	function changePassword(string $password): void {
 		$this->password = password_hash($password, PASSWORD_DEFAULT);
 		$this->save();
 	}

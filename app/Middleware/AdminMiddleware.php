@@ -28,14 +28,13 @@ class AdminMiddleware implements MiddlewareInterface {
 	}
 	
 	public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
-		$user = $this->userService->current_user();
+		$user = $this->userService->getCurrent();
 		if (!$user) {
 			return $this->response->json([
 				'code' => 401,
 				'message' => '请先登录'
 			]);
 		}
-		$user = $this->userService->current_user();
 		if ($user->type !== User::TYPE_ADMIN) {
 			return $this->response->json([
 				'code' => 403,
