@@ -17,14 +17,27 @@ use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\HttpServer\Contract\ResponseInterface;
 use Psr\Container\ContainerInterface;
 
-#[AutoController]
 abstract class Controller {
 	#[Inject]
 	protected ContainerInterface $container;
-	
 	#[Inject]
 	protected RequestInterface $request;
-	
 	#[Inject]
 	protected ResponseInterface $response;
+	
+	
+	protected function success($data = null, $message = 'success', $code = 200): array {
+		return [
+			'code' => $code,
+			'message' => $message,
+			'data' => $data
+		];
+	}
+	
+	protected function error($message = 'error', $code = 500): array {
+		return [
+			'code' => $code,
+			'message' => $message,
+		];
+	}
 }

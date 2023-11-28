@@ -2,6 +2,11 @@
 
 namespace App\Controller\Abstract;
 
-abstract class AdminController extends Controller {
-	
+use App\Middleware\AdminMiddleware;
+use App\Model\User;
+use Hyperf\HttpServer\Annotation\Middleware;
+
+#[Middleware(AdminMiddleware::class)]
+abstract class AdminController extends LoginController {
+
 }

@@ -6,6 +6,8 @@ use App\Model\Model;
 use App\Model\Scope\AuthorScope;
 use App\Model\Scope\UserScope;
 use Carbon\Carbon;
+use Qbhy\HyperfAuth\AuthAbility;
+use Qbhy\HyperfAuth\Authenticatable;
 
 /**
  * @property int $id
@@ -19,18 +21,21 @@ use Carbon\Carbon;
  * @property Carbon $created_at 创建时间
  * @property Carbon $updated_at 更新时间
  */
-class User extends Model {
+class User extends Model implements Authenticatable {
+	use AuthAbility;
+	
 	const TYPE_USER = 'user';
 	const TYPE_AUTHOR = 'author';
+	const TYPE_ADMIN = 'admin';
+	
+	
 	protected ?string $table = 'user';
 	
 	protected array $casts = [
-		'ext_data'=>'json',
+		'ext_data' => 'json',
 	];
 	
-	
-	protected static function booted(): void
-	{
+	protected static function booted(): void {
 		static::addGlobalScope(new UserScope);
 	}
 	

@@ -13,6 +13,7 @@
     "license": "Apache-2.0",
     "require": {
         "php": ">=8.0",
+        "96qbhy/hyperf-auth": "^3.0",
         "guzzlehttp/guzzle": "^7.8",
         "hyperf/async-queue": "^3.0",
         "hyperf/cache": "~3.0.0",

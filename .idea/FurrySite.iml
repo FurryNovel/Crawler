@@ -127,6 +127,9 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/theseer/tokenizer" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/vlucas/phpdotenv" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/hyperf/crontab" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/96qbhy/hyperf-auth" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/96qbhy/simple-jwt" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/doctrine/cache" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
