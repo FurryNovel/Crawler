@@ -9,7 +9,9 @@ use Hyperf\HttpServer\Annotation\Middleware;
 use Qbhy\HyperfAuth\AuthManager;
 use Qbhy\HyperfAuth\AuthMiddleware;
 
-#[Middleware(AuthMiddleware::class)]
 abstract class LoginController extends Controller {
+	#[Inject]
+	protected AuthManager $auth;
+	
 	
 }

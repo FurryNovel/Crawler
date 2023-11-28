@@ -15,12 +15,12 @@ use Hyperf\Di\Annotation\Inject;
 use Hyperf\Engine\Contract\Http\V2\RequestInterface;
 use Hyperf\HttpServer\Annotation\AutoController;
 use Hyperf\HttpServer\Annotation\GetMapping;
+use Hyperf\HttpServer\Annotation\Middleware;
 use Qbhy\HyperfAuth\AuthManager;
+use Qbhy\HyperfAuth\AuthMiddleware;
 
 #[AutoController]
 class UserController extends LoginController {
-	#[Inject]
-	protected AuthManager $auth;
 	#[Inject]
 	protected UserService $userService;
 	
