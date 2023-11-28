@@ -12,11 +12,13 @@ use Hyperf\HttpServer\Annotation\RequestMapping;
 
 #[Controller]
 class NovelController extends FS_Controller {
-	#[RequestMapping(path: '{key}[/{command}][/{other}]', methods: 'get')]
+	#[RequestMapping(path: '{key}[/{command}[/{other}]]', methods: 'get')]
 	function command(int|string $key, ?string $command = null, ?string $other = null): array {
 		if (is_numeric($key)) {
-			//'chapter' => $this->chapters($command, $other),
-			return $this->success(Novel::findFromCache($key));
+			return match ($command) {
+				'chapter' => $this->chapters($key, $other),
+				default => $this->success(Novel::findFromCache($key)),
+			};
 		} else if (is_string($key)) {
 			return match ($key) {
 				'recommend' => $this->byTag(),
@@ -44,7 +46,7 @@ class NovelController extends FS_Controller {
 	
 	function chapters(string $novel_id, ?string $chapter_id = null): array {
 		if ($chapter_id) {
-			return $this->success([Chapter::findFromCache($chapter_id)]);
+			return $this->success(Chapter::findFromCache($chapter_id));
 		}
 		return $this->success(
 			Chapter::where(function (Builder $query) use ($novel_id) {
