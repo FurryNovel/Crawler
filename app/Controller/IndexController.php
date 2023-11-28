@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace App\Controller;
 
-use App\Controller\Abstract\Controller;
+use App\Controller\Abstract\FS_Controller;
 use App\Controller\Abstract\PublicController;
 use App\FetchRule\FetchRule;
 use App\Model\Novel;
@@ -14,10 +14,7 @@ use Hyperf\HttpServer\Annotation\AutoController;
 use Qbhy\HyperfAuth\AuthManager;
 
 #[AutoController]
-class IndexController extends Controller {
-	#[Inject]
-	protected AuthManager $auth;
-	
+class IndexController extends FS_Controller {
 	function ping(): array {
 		return $this->success(
 			[

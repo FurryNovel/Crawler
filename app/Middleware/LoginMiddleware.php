@@ -16,7 +16,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 /**
  * 登陆授权中间件
  */
-class AdminMiddleware implements MiddlewareInterface {
+class LoginMiddleware implements MiddlewareInterface {
 	protected ContainerInterface $container;
 	protected RequestInterface $request;
 	protected HttpResponse $response;
@@ -36,12 +36,6 @@ class AdminMiddleware implements MiddlewareInterface {
 			return $this->response->json([
 				'code' => 401,
 				'message' => '请先登录'
-			]);
-		}
-		if ($user->type !== User::TYPE_ADMIN) {
-			return $this->response->json([
-				'code' => 403,
-				'message' => '权限不足'
 			]);
 		}
 		return $handler->handle($request);

@@ -12,14 +12,16 @@ declare(strict_types = 1);
 
 namespace App\Controller\Abstract;
 
+use App\Service\UserService;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\HttpServer\Contract\ResponseInterface;
 use Hyperf\Paginator\LengthAwarePaginator;
 use Hyperf\Paginator\Paginator;
 use Psr\Container\ContainerInterface;
+use Qbhy\HyperfAuth\AuthManager;
 
-abstract class Controller {
+abstract class FS_Controller {
 	#[Inject]
 	protected ContainerInterface $container;
 	#[Inject]
@@ -27,6 +29,10 @@ abstract class Controller {
 	#[Inject]
 	protected ResponseInterface $response;
 	
+	#[Inject]
+	protected AuthManager $auth;
+	#[Inject]
+	protected UserService $userService;
 	
 	protected function success($data = null, $message = 'success', $code = 200): array {
 		if ($data instanceof LengthAwarePaginator) {

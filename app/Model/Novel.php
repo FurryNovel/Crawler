@@ -26,12 +26,18 @@ use Hyperf\Database\Model\Relations\HasOne;
  * @property Carbon $fetched_at 获取时间
  */
 class Novel extends Model {
+	const STATUS_PENDING = 'pending';
+	const STATUS_PUBLISH = 'publish';
 	protected ?string $table = 'novel';
 	
 	protected array $casts = [
 		'tags' => 'json',
 		'ext_data' => 'json',
 		'fetched_at' => 'timestamp',
+	];
+	
+	protected array $hidden = [
+		'chapters'
 	];
 	
 	public function author(): HasOne {
