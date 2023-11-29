@@ -28,4 +28,8 @@ abstract class Model extends BaseModel implements CacheableInterface {
 	}
 	
 	protected function bootGlobalScope(): void {}
+	
+	protected function asJson(mixed $value): string|false {
+		return json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+	}
 }
