@@ -5,16 +5,18 @@ namespace App\Task;
 use App\FetchRule\FetchRule;
 use App\Model\Chapter;
 use App\Model\Novel;
+use App\Service\FetchQueueService;
 use GuzzleHttp\Exception\GuzzleException;
 use Hyperf\Collection\Collection;
 use Hyperf\Crontab\Annotation\Crontab;
 use Hyperf\Database\Query\Builder;
+use Hyperf\Di\Annotation\Inject;
 
 #[Crontab(rule: "0 0 4,12,20 * *", name: "FetchUpdateNovelTask", callback: "execute", memo: "采集小说任务")]
 class FetchUpdateNovelTask {
-	/**
-	 * @throws GuzzleException
-	 */
+	#[Inject]
+	protected FetchQueueService $fetchQueueService;
+	
 	public function execute(): void {
 		$time = time();
 		Novel::where(function (Builder $query) use ($time) {
@@ -28,26 +30,11 @@ class FetchUpdateNovelTask {
 				if (!$rule) {
 					continue;
 				}
-				$chapterList = $rule->fetchChapterList($novel->ext_data['source_id']);
-				foreach ($chapterList as $chapter) {
-					if (Chapter::where('source_id', $chapter->id)->first()) {
-						continue;
-					}
-					$content = $rule->fetchChapterContent($novel->id, $chapter->id);
-					Chapter::create([
-						'author_id' => $novel->author_id,
-						'novel_id' => $novel->id,
-						'name' => $chapter->name,
-						'content' => $content,
-						'tags' => [],
-						'text_count' => $chapter->text_count,
-						'word_count' => $chapter->word_count,
-						'status' => Chapter::STATUS_PUBLISH,
-						'source_id' => $chapter->id
-					]);
-				}
 				$novel->fetched_at = time();
 				$novel->save();
+				$this->fetchQueueService->push([
+					'novel_id' => $novel->id
+				]);
 			}
 		}, 'id');
 	}
