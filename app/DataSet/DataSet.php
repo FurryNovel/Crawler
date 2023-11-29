@@ -4,6 +4,7 @@ namespace App\DataSet;
 
 use Fukuball\Jieba\Jieba;
 use Fukuball\Jieba\Finalseg;
+use Fukuball\Jieba\Posseg;
 use Fukuball\Jieba\JiebaAnalyse;
 
 class DataSet {
@@ -13,7 +14,7 @@ class DataSet {
 		ini_set('memory_limit', '-1');
 		Jieba::init(array('mode' => 'default', 'dict' => 'big', 'cjk' => 'all'));
 		Finalseg::init();
-		
+		Posseg::init();
 		$this->load('Race');
 		$this->load('Tag');
 	}
@@ -93,7 +94,13 @@ class DataSet {
 	
 	
 	function convertContentToPattern(?string $dataset, string $content): array {
-		$tags = JiebaAnalyse::extractTags($content);
+		$tags = Posseg::cut($content);
+		$tags = array_column(array_values(array_filter($tags, function ($token) {
+			return in_array($token['tag'], [
+				'n', 'nr', 'nr1', 'nr2', 'nrj', 'nrf', 'ns', 'nsf', 'nt', 'nz',
+				'a', 'ad', 'an', 'ag', 'al'
+			]);
+		})), 'word');
 		return $this->convertToPattern($dataset, $tags);
 	}
 }

@@ -67,14 +67,12 @@ return [
 		'R-18G',
 		'R18-G'
 	],
-	'SFW' => [
-		'SFW',
-	],
 	'Gay' => [
 		'Gay',
 		'BL',
 		'腐向け',
 		'ゲイ',
+		'男同',
 	],
 	'Lesbian' => [
 		'Lesbian',
