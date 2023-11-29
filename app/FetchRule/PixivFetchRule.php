@@ -44,13 +44,16 @@ class PixivFetchRule extends FetchRule {
 			if ($novel['aiType']) {
 				$tags[] = 'AI生成';
 			}
+			if ($novel['language']) {
+				$tags[] = $novel['language'];
+			}
 			return new NovelInfo(
 				$novel['id'],
 				$novel['title'],
 				$novel['userName'],
 				$novel['userId'],
 				$novel['cover']['urls']['original'],
-				$novel['desc'],
+				$novel['caption'],
 				$tags
 			);
 		}, $data);
@@ -70,13 +73,16 @@ class PixivFetchRule extends FetchRule {
 		if ($novel['aiType']) {
 			$tags[] = 'AI生成';
 		}
+		if ($novel['language']) {
+			$tags[] = $novel['language'];
+		}
 		return new NovelInfo(
 			$novel['id'],
 			$novel['title'],
 			$novel['userName'],
 			$novel['userId'],
 			$novel['cover']['urls']['original'],
-			$novel['desc'],
+			$novel['caption'],
 			$tags
 		);
 	}
@@ -95,7 +101,7 @@ class PixivFetchRule extends FetchRule {
 		$response = json_decode($response->getBody()->getContents(), true);
 		return array_map(function ($chapter) {
 			$tags = $chapter['tags'];
-			switch ($chapter['xRestrict']){
+			switch ($chapter['xRestrict']) {
 				case 0:
 					$tags[] = 'SFW';
 					break;
@@ -118,10 +124,10 @@ class PixivFetchRule extends FetchRule {
 			);
 		}, $response['body']['thumbnails']['novel']);
 	}
-
+	
 	function fetchChapterContent(string $novelId, string $chapterId): string {
 		//https://www.pixiv.net/ajax/novel/20065569?lang=zh&version=42055d64ddbad5c0a69639e157b82e921bf63b31
-		$response = $this->getRequest()->get('/ajax/novel/'. $chapterId, [
+		$response = $this->getRequest()->get('/ajax/novel/' . $chapterId, [
 			'query' => [
 				'lang' => 'zh',
 				'version' => '42055d64ddbad5c0a69639e157b82e921bf63b31',
@@ -133,7 +139,7 @@ class PixivFetchRule extends FetchRule {
 	
 	function fetchAuthorInfo(string $authorId): AuthorInfo {
 		//https://www.pixiv.net/ajax/user/3337300?full=1&lang=zh&version=42055d64ddbad5c0a69639e157b82e921bf63b31
-		$response = $this->getRequest()->get('/ajax/user/'. $authorId, [
+		$response = $this->getRequest()->get('/ajax/user/' . $authorId, [
 			'query' => [
 				'full' => 1,
 				'lang' => 'zh',

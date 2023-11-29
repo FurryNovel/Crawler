@@ -31,7 +31,7 @@ class AdminController extends FS_Controller {
 			$query->where('name', $novelInfo->author);
 		})->first();
 		if (!$author) {
-			$authorInfo = $rule->fetchAuthorInfo($novelInfo->author);
+			$authorInfo = $rule->fetchAuthorInfo($novelInfo->author_id);
 			$author = Author::register(
 				User::TYPE_AUTHOR,
 				$authorInfo->name,
