@@ -12,6 +12,7 @@ class DataSet {
 	public function __construct() {
 		ini_set('memory_limit', '-1');
 		Jieba::init(array('mode' => 'default', 'dict' => 'big', 'cjk' => 'all'));
+		Finalseg::init();
 		
 		$this->load('Race');
 		$this->load('Tag');
@@ -19,7 +20,7 @@ class DataSet {
 	
 	//$name
 	function load($name): array {
-		if (!isset($this->$dataset[$name]) and file_exists(BASE_PATH . "/app/DataSet/$name.php")) {
+		if (!isset($this->dataset[$name]) and file_exists(BASE_PATH . "/app/DataSet/$name.php")) {
 			$this->dataset[$name] = include_once BASE_PATH . "/app/DataSet/$name.php";
 		}
 		return $this->dataset[$name] ?? [];
