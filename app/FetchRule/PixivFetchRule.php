@@ -69,7 +69,7 @@ class PixivFetchRule extends FetchRule {
 		]);
 		$response = json_decode($response->getBody()->getContents(), true);
 		$novel = $response['body'];
-		$tags = $novel['tags'];
+		$tags = $novel['tags'] ?? [];
 		if ($novel['aiType']) {
 			$tags[] = 'AI生成';
 		}
@@ -91,7 +91,7 @@ class PixivFetchRule extends FetchRule {
 		//https://www.pixiv.net/ajax/novel/series_content/10579180?limit=30&last_order=0&order_by=asc&lang=zh&version=42055d64ddbad5c0a69639e157b82e921bf63b31
 		$response = $this->getRequest()->get('/ajax/novel/series_content/' . $novelId, [
 			'query' => [
-				'limit' => 30 * intval($page),
+				'limit' => 30,
 				'last_order' => 30 * (intval($page) - 1),
 				'order_by' => 'asc',
 				'lang' => 'zh',
@@ -102,10 +102,10 @@ class PixivFetchRule extends FetchRule {
 		return array_map(function ($chapter) {
 			return new ChapterInfo(
 				$chapter['id'],
-				$chapter['title'],
-				$chapter['url'],
-				$chapter['textCount'],
-				$chapter['wordCount'],
+				$chapter['title'] ?? '',
+				$chapter['url'] ?? '',
+				$chapter['textCount'] ?? 0,
+				$chapter['wordCount'] ?? 0,
 				[]
 			);
 		}, $response['body']['page']['seriesContents']);
