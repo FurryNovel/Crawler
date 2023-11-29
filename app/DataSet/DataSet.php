@@ -41,10 +41,10 @@ class DataSet {
 					) {
 						switch ($to) {
 							case 'zh-cn':
-								$tag = $this->filterByZHCN($tags)[0] ?? $v;
+								$tag = $this->filterByZHCN($v)[0] ?? $v;
 								break;
 							case 'zh-tw':
-								$tag = $this->filterByZHTW($tags)[0] ?? $v;
+								$tag = $this->filterByZHTW($v)[0] ?? $v;
 								break;
 							default:
 							case 'en-us':
