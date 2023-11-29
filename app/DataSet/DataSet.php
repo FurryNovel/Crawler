@@ -101,6 +101,9 @@ class DataSet {
 				'a', 'ad', 'an', 'ag', 'al'
 			]);
 		})), 'word');
+		$counts = array_count_values($tags);
+		arsort($counts);
+		$tags = array_keys($counts);
 		return $this->convertToPattern($dataset, $tags);
 	}
 }
