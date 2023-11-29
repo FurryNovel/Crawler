@@ -12,6 +12,7 @@ declare(strict_types = 1);
 
 namespace App\Model;
 
+use App\Model\Scope\AuthorScope;
 use Hyperf\DbConnection\Model\Model as BaseModel;
 use Hyperf\ModelCache\Cacheable;
 use Hyperf\ModelCache\CacheableInterface;
@@ -20,4 +21,11 @@ abstract class Model extends BaseModel implements CacheableInterface {
 	use Cacheable;
 	
 	protected array $guarded = [];
+	
+	protected function boot(): void {
+		parent::boot();
+		$this->bootGlobalScope();
+	}
+	
+	protected function bootGlobalScope(): void {}
 }

@@ -43,8 +43,7 @@ class User extends Model implements Authenticatable {
 		'ext_data',
 	];
 	
-	protected function boot(): void {
-		parent::boot();
+	protected function bootGlobalScope(): void {
 		static::addGlobalScope(new UserScope);
 	}
 	

@@ -60,6 +60,9 @@ class Novel extends Model {
 	}
 	
 	function getTagsAttribute($value): array {
-		return $this->dataSet->convertTo('zh-cn', null, $value);
+		if (is_string($value)) {
+			$value = json_decode($value, true);
+		}
+		return $this->dataSet->convertTo('zh-cn', null, (array)$value);
 	}
 }

@@ -10,8 +10,7 @@ use Carbon\Carbon;
 /**
  */
 class Author extends User {
-	protected function boot(): void {
-		parent::boot();
+	protected function bootGlobalScope(): void {
 		static::addGlobalScope(new AuthorScope);
 	}
 }

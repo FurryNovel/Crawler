@@ -9,13 +9,18 @@ use App\Middleware\AdminMiddleware;
 use App\Model\Author;
 use App\Model\Novel;
 use App\Model\User;
+use App\Service\FetchQueueService;
 use Hyperf\Database\Model\Builder;
+use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\AutoController;
 use Hyperf\HttpServer\Annotation\Middleware;
 
 #[AutoController]
 #[Middleware(AdminMiddleware::class)]
 class AdminController extends FS_Controller {
+	#[Inject]
+	protected FetchQueueService $fetchQueueService;
+	
 	function fetch_novel(string $type, string $rule_novel_id): array {
 		$rule = FetchRule::getRule($type);
 		if (!$rule) {
@@ -39,28 +44,32 @@ class AdminController extends FS_Controller {
 				[]
 			);
 		}
-		
+		/**
+		 * @var Novel $novel
+		 */
 		$novel = Novel::where(function (Builder $query) use ($rule_novel_id, $novelInfo) {
 			$query->where('source_id', $rule_novel_id);
 		})->first();
 		
-		if ($novel) {
-			return $this->success($novel,
-				'请求成功，请耐心等候系统处理'
-			);
+		if (!$novel) {
+			$novel = new Novel([
+				'author_id' => $author->id,
+				'name' => $novelInfo->name,
+				'cover' => $novelInfo->cover,
+				'desc' => $novelInfo->desc,
+				'tags' => $novelInfo->tags,
+				'view_count' => 0,
+				'furry_weight' => 0,
+				'source' => $type,
+				'source_id' => $rule_novel_id,
+				'status' => Novel::STATUS_PUBLISH,
+				'ext_data' => [],
+			]);
+			$novel->save();
 		}
-		$novel = new Novel([
-			'author_id' => $author->id,
-			'name' => $novelInfo->name,
-			'cover' => $novelInfo->cover,
-			'desc' => $novelInfo->desc,
-			'tags' => $novelInfo->tags,
-			'view_count' => 0,
-			'furry_weight' => 0,
-			'source_id' => $rule_novel_id,
-			'status' => Novel::STATUS_PUBLISH,
+		$this->fetchQueueService->push([
+			'novel_id' => $novel->id
 		]);
-		$novel->save();
 		return $this->success($novel,
 			'请求成功，请耐心等候系统处理'
 		);
