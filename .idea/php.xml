@@ -129,6 +129,7 @@
       <path value="$PROJECT_DIR$/vendor/96qbhy/hyperf-auth" />
       <path value="$PROJECT_DIR$/vendor/96qbhy/simple-jwt" />
       <path value="$PROJECT_DIR$/vendor/doctrine/cache" />
+      <path value="$PROJECT_DIR$/vendor/fukuball/jieba-php" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.0" />

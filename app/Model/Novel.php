@@ -2,10 +2,12 @@
 
 namespace App\Model;
 
+use App\DataSet\DataSet;
 use App\Model\Model;
 use Carbon\Carbon;
 use Hyperf\Database\Model\Relations\HasMany;
 use Hyperf\Database\Model\Relations\HasOne;
+use Hyperf\Di\Annotation\Inject;
 
 /**
  * @property int $id 小说ID
@@ -17,6 +19,7 @@ use Hyperf\Database\Model\Relations\HasOne;
  * @property string $desc 描述
  * @property array $tags 标签
  * @property string $source 来源
+ * @property string $source_id 来源ID
  * @property array $ext_data 额外信息
  * @property int $view_count 阅读量
  * @property float $furry_weight furry权重
@@ -30,6 +33,9 @@ class Novel extends Model {
 	const STATUS_PUBLISH = 'publish';
 	protected ?string $table = 'novel';
 	
+	#[Inject]
+	protected DataSet $dataSet;
+	
 	protected array $casts = [
 		'tags' => 'json',
 		'ext_data' => 'json',
@@ -40,11 +46,20 @@ class Novel extends Model {
 		'chapters'
 	];
 	
-	public function author(): HasOne {
+	function author(): HasOne {
 		return $this->hasOne(Author::class, 'id', 'author_id');
 	}
 	
-	public function chapters(): HasMany {
+	function chapters(): HasMany {
 		return $this->hasMany(Chapter::class, 'novel_id', 'id');
+	}
+	
+	function save(array $options = []): bool {
+		$this->tags = $this->dataSet->convertToPattern(null, $this->tags);
+		return parent::save($options);
+	}
+	
+	function getTagsAttribute($value): array {
+		return $this->dataSet->convertTo('zh-cn', null, $value);
 	}
 }

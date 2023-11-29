@@ -24,6 +24,9 @@ use Qbhy\HyperfAuth\Authenticatable;
 class User extends Model implements Authenticatable {
 	use AuthAbility;
 	
+	const STATUS_PENDING = 'pending';
+	const STATUS_PUBLISH = 'publish';
+	
 	const TYPE_USER = 'user';
 	const TYPE_AUTHOR = 'author';
 	const TYPE_ADMIN = 'admin';
@@ -59,6 +62,27 @@ class User extends Model implements Authenticatable {
 		if (!$user or !password_verify($password, $user->password)) {
 			return null;
 		}
+		return $user;
+	}
+	
+	static function register(
+		string $type,
+		string $name,
+		string $password,
+		array  $qa,
+	): static {
+		$user = new static([
+			'type' => $type,
+			'name' => $name,
+			'nickname' => $name,
+			'password' => password_hash($password, PASSWORD_DEFAULT),
+			'desc' => '该用户很懒，什么都没留下',
+			'status' => self::STATUS_PUBLISH,
+			'ext_data' => [
+				'qa' => $qa,
+			],
+		]);
+		$user->save();
 		return $user;
 	}
 }

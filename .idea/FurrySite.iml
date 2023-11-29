@@ -130,6 +130,7 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/96qbhy/hyperf-auth" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/96qbhy/simple-jwt" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/doctrine/cache" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/fukuball/jieba-php" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
