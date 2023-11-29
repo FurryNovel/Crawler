@@ -100,29 +100,15 @@ class PixivFetchRule extends FetchRule {
 		]);
 		$response = json_decode($response->getBody()->getContents(), true);
 		return array_map(function ($chapter) {
-			$tags = $chapter['tags'];
-			switch ($chapter['xRestrict']) {
-				case 0:
-					$tags[] = 'SFW';
-					break;
-				case 1:
-					$tags[] = 'R18';
-					break;
-				case 2:
-					$tags[] = 'R18G';
-					break;
-				default:
-					break;
-			}
 			return new ChapterInfo(
 				$chapter['id'],
 				$chapter['title'],
 				$chapter['url'],
 				$chapter['textCount'],
 				$chapter['wordCount'],
-				$tags
+				[]
 			);
-		}, $response['body']['thumbnails']['novel']);
+		}, $response['body']['page']['seriesContents']);
 	}
 	
 	function fetchChapterContent(string $novelId, string $chapterId): string {
