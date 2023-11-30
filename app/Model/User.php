@@ -58,7 +58,13 @@ class User extends Model implements Authenticatable {
 	
 	static function login(string $username, string $password): ?User {
 		$user = User::query()->where('name', $username)->first();
-		if (!$user or !password_verify($password, $user->password)) {
+		if (!$user) {
+			return null;
+		}
+		if (!password_verify(base64_encode('kk_novel_' . $user->name), $user->password)) {
+			throw new \Exception('认领作者账号，请联系管理员 admin@tigerkk.me');
+		}
+		if (!password_verify($password, $user->password)) {
 			return null;
 		}
 		return $user;
