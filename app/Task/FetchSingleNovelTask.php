@@ -47,8 +47,8 @@ class FetchSingleNovelTask extends Job {
 						'name' => $chapterInfo->name,
 						'content' => $content,
 						'tags' => [],
-						'text_count' => $chapterInfo->text_count,
-						'word_count' => $chapterInfo->word_count,
+						'text_count' => $chapterInfo->text_count ?? mb_strlen($content),
+						'word_count' => $chapterInfo->word_count ?? mb_strlen($content),
 						'status' => Chapter::STATUS_PUBLISH,
 						'source_id' => $chapterInfo->id
 					]);
