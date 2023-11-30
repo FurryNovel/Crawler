@@ -5,12 +5,26 @@ namespace App\Controller;
 
 use App\Controller\Abstract\FS_Controller;
 use App\Middleware\LoginMiddleware;
+use App\Model\User;
 use Hyperf\HttpServer\Annotation\AutoController;
 use Hyperf\HttpServer\Annotation\Middleware;
 
 #[AutoController]
-#[Middleware(LoginMiddleware::class)]
 class UserController extends FS_Controller {
+	
+	function login($username, $password): array {
+		$user = User::login($username, $password);
+		if (!$user) {
+			return $this->error('用户信息不正确');
+		}
+		$user->token = $this->auth->login($user);
+		return $this->success(
+			$user,
+			'登录成功'
+		);
+	}
+	
+	#[Middleware(LoginMiddleware::class)]
 	function info(): array {
 		$user = $this->userService->getCurrent();
 		return $this->success(
@@ -19,6 +33,7 @@ class UserController extends FS_Controller {
 		);
 	}
 	
+	#[Middleware(LoginMiddleware::class)]
 	function change_password(string $old_password, string $new_password): array {
 		$user = $this->userService->getCurrent();
 		if (!$user) {
@@ -35,6 +50,7 @@ class UserController extends FS_Controller {
 		);
 	}
 	
+	#[Middleware(LoginMiddleware::class)]
 	function update(string $nickname, string $desc): array {
 		$user = $this->userService->getCurrent();
 		if (!$user) {

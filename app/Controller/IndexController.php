@@ -23,16 +23,4 @@ class IndexController extends FS_Controller {
 			'pong'
 		);
 	}
-	
-	function login($username, $password): array {
-		$user = User::login($username, $password);
-		if (!$user) {
-			return $this->error('用户信息不正确');
-		}
-		$user->token = $this->auth->login($user);
-		return $this->success(
-			$user,
-			'登录成功'
-		);
-	}
 }
