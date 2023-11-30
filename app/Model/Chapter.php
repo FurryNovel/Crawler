@@ -49,7 +49,7 @@ class Chapter extends Model {
 	
 	function save(array $options = []): bool {
 		$tags = $this->dataSet->convertContentToPattern(null, $this->content);
-		$this->tags = JiebaAnalyse::extractTags(implode(' ', $tags), 30);
+		$this->tags = array_keys(JiebaAnalyse::extractTags(implode(' ', $tags), 30));
 		return parent::save($options);
 	}
 }
