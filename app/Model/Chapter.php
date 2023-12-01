@@ -38,6 +38,10 @@ class Chapter extends Model {
 		'tags' => 'json',
 	];
 	
+	protected array $hidden = [
+		'content'
+	];
+	
 	function author(): HasOne {
 		return $this->hasOne(Author::class, 'id', 'author_id');
 	}

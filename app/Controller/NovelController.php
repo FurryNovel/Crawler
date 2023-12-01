@@ -46,7 +46,7 @@ class NovelController extends FS_Controller {
 	
 	function chapters(string $novel_id, ?string $chapter_id = null): array {
 		if ($chapter_id) {
-			return $this->success(Chapter::findFromCache($chapter_id));
+			return $this->success(Chapter::findFromCache($chapter_id)->makeVisible('content'));
 		}
 		return $this->success(
 			Chapter::where(function (Builder $query) use ($novel_id) {
