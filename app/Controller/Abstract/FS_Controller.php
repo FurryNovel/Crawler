@@ -37,16 +37,16 @@ abstract class FS_Controller {
 	#[Inject]
 	protected TranslatorInterface $translator;
 	
-	protected function trans($key) {
+	protected function trans($key): array|string {
 		$this->translator->setLocale(Utils::getVisitorLanguage());
-		$trans = $this->translator->trans('global.' . $key);
-		if ($trans === 'global.' . $key) {
-			return $key;
+		$trans = $this->translator->trans($key);
+		if (str_starts_with($trans, 'global.')) {
+			return substr($trans, 7);
 		}
 		return $trans;
 	}
 	
-	protected function success($data = null, $message = 'success', $code = 200): array {
+	protected function success($data = null, $message = '操作成功', $code = 200): array {
 		if ($data instanceof LengthAwarePaginator) {
 			return [
 				'code' => $code,
@@ -65,7 +65,7 @@ abstract class FS_Controller {
 		];
 	}
 	
-	protected function error($message = 'error', $code = 500): array {
+	protected function error($message = '发生错误', $code = 500): array {
 		return [
 			'code' => $code,
 			'message' => $this->trans('global.' . $message),
