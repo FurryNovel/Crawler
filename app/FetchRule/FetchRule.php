@@ -55,7 +55,7 @@ abstract class FetchRule {
 	 * @param string $chapterId
 	 * @return string
 	 */
-	abstract function fetchChapterContent(string $novelId, string $chapterId): string;
+	abstract function fetchChapterContent(string $novelId, string $chapterId): ChapterInfo;
 	
 	/**
 	 * 获取作者信息
@@ -95,16 +95,18 @@ class ChapterInfo {
 	public string $cover;
 	public int $text_count;
 	public int $word_count;
+	public ?string $content;
 	
 	public array $tags;
 	
-	public function __construct(string $id, string $name, string $cover, int $text_count, int $word_count, array $tags) {
+	public function __construct(string $id, string $name, string $cover, int $text_count, int $word_count, array $tags, ?string $content) {
 		$this->id = $id;
 		$this->name = $name;
 		$this->cover = $cover;
 		$this->text_count = $text_count;
 		$this->word_count = $word_count;
 		$this->tags = $tags;
+		$this->content = $content;
 	}
 }
 

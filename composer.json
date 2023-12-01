@@ -15,6 +15,7 @@
     "php": ">=8.0",
     "ext-iconv": "*",
     "96qbhy/hyperf-auth": "^3.0",
+    "friendsofhyperf/helpers": "^3.0",
     "fukuball/jieba-php": "dev-master",
     "guzzlehttp/guzzle": "^7.8",
     "hyperf/async-queue": "^3.0",

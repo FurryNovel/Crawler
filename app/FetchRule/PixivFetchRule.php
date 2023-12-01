@@ -5,6 +5,7 @@ namespace App\FetchRule;
 use App\FetchRule\FetchRule;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use Hyperf\Guzzle\CoroutineHandler;
 
 /**
  * @throws GuzzleException
@@ -16,6 +17,7 @@ class PixivFetchRule extends FetchRule {
 	
 	function getRequest(): Client {
 		return new Client([
+			'handler' => \GuzzleHttp\HandlerStack::create(new CoroutineHandler()),
 			'base_uri' => 'https://www.pixiv.net/',
 			'timeout' => 15,
 		]);
@@ -106,12 +108,13 @@ class PixivFetchRule extends FetchRule {
 				$chapter['url'] ?? '',
 				$chapter['textCount'] ?? 0,
 				$chapter['wordCount'] ?? 0,
-				[]
+				[],
+				null
 			);
 		}, $response['body']['page']['seriesContents']);
 	}
 	
-	function fetchChapterContent(string $novelId, string $chapterId): string {
+	function fetchChapterContent(string $novelId, string $chapterId): ChapterInfo {
 		//https://www.pixiv.net/ajax/novel/20065569?lang=zh&version=42055d64ddbad5c0a69639e157b82e921bf63b31
 		$response = $this->getRequest()->get('/ajax/novel/' . $chapterId, [
 			'query' => [
@@ -120,7 +123,16 @@ class PixivFetchRule extends FetchRule {
 			],
 		]);
 		$response = json_decode($response->getBody()->getContents(), true);
-		return $response['body']['content'];
+		$chapter = $response['body'];
+		return new ChapterInfo(
+			$chapterId,
+			$chapter['title'] ?? '',
+			$chapter['coverUrl'] ?? '',
+			$chapter['textCount'] ?? 0,
+			$chapter['wordCount'] ?? 0,
+			[],
+			$chapter['content']
+		);
 	}
 	
 	function fetchAuthorInfo(string $authorId): AuthorInfo {

@@ -2,6 +2,7 @@
 
 namespace App\Task;
 
+use App\FetchRule\ChapterInfo;
 use App\FetchRule\FetchRule;
 use App\Model\Chapter;
 use App\Model\Novel;
@@ -34,6 +35,9 @@ class FetchSingleNovelTask extends Job {
 		$page = 0;
 		do {
 			$page++;
+			/**
+			 * @var ChapterInfo[] $chapterList
+			 */
 			$chapterList = $this->handleException(function () use ($page, $novel, $rule) {
 				return $rule->fetchChapterList($novel->source_id, (string)$page);
 			}) ?? [];
@@ -42,18 +46,21 @@ class FetchSingleNovelTask extends Job {
 				if (Chapter::where('source_id', $chapterInfo->id)->first()) {
 					continue;
 				}
-				$content = $this->handleException(function () use ($chapterInfo, $novel, $rule) {
+				$chapter = $this->handleException(function () use ($chapterInfo, $novel, $rule) {
 					return $rule->fetchChapterContent($novel->source_id, $chapterInfo->id);
 				});
-				if ($content) {
+				/**
+				 * @var ChapterInfo $chapter
+				 */
+				if ($chapter) {
 					Chapter::create([
 						'author_id' => $novel->author_id,
 						'novel_id' => $novel->id,
-						'name' => $chapterInfo->name,
-						'content' => $content,
+						'name' => $chapter->name,
+						'content' => $chapter->content,
 						'tags' => [],
-						'text_count' => $chapterInfo->text_count ?? mb_strlen($content),
-						'word_count' => $chapterInfo->word_count ?? mb_strlen($content),
+						'text_count' => max($chapterInfo->text_count ?? 0, mb_strlen($chapter->content)),
+						'word_count' => max($chapterInfo->word_count ?? 0, mb_strlen($chapter->content)),
 						'status' => Chapter::STATUS_PUBLISH,
 						'source_id' => $chapterInfo->id
 					]);
