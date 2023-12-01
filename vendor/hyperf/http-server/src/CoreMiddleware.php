@@ -138,11 +138,7 @@ class CoreMiddleware implements CoreMiddlewareInterface
                 // Route found, but the handler does not exist.
                 throw new ServerErrorHttpException('Method of class does not exist.');
             }
-	        $parameters = $this->parseMethodParameters($controller, $action, array_merge(
-				$request->getQueryParams(),
-		        $request->getParsedBody(),
-				$dispatched->params
-	        ));
+	        $parameters = $this->parseMethodParameters($controller, $action, $dispatched->params);
             $response = $controllerInstance->{$action}(...$parameters);
         }
         return $response;

@@ -27,6 +27,14 @@ class AppExceptionHandler extends ExceptionHandler {
 	public function handle(Throwable $throwable, ResponseInterface $response) {
 		$this->logger->error(sprintf('%s[%s] in %s', $throwable->getMessage(), $throwable->getLine(), $throwable->getFile()));
 		$this->logger->error($throwable->getTraceAsString());
+		if ($throwable instanceof \InvalidArgumentException) {
+			$_t = explode('\'', $throwable->getMessage());
+			$throwable = new \InvalidArgumentException(
+				'参数缺失: ' . $_t[1] ?? $throwable->getMessage(),
+				$throwable->getCode(),
+				$throwable
+			);
+		}
 		
 		$data = [
 			'code' => $throwable->getCode(),
