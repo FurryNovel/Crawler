@@ -24,6 +24,9 @@ class DataSet {
 		if (!isset($this->dataset[$name]) and file_exists(BASE_PATH . "/app/DataSet/$name.php")) {
 			$this->dataset[$name] = include_once BASE_PATH . "/app/DataSet/$name.php";
 		}
+		if (!is_array($this->dataset[$name])) {
+			$this->dataset[$name] = [];
+		}
 		return $this->dataset[$name] ?? [];
 	}
 	
