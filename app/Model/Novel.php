@@ -73,8 +73,8 @@ class Novel extends Model {
 				'i.pximg.net'
 			],
 			[
-				//'i.pixiv.re',
-				'pixiv.545551320.workers.dev'
+				'i.pixiv.re',
+				//'pixiv.545551320.workers.dev'
 			],
 			$value
 		);
