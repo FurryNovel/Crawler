@@ -30,8 +30,6 @@ class FetchUpdateNovelTask {
 				if (!$rule) {
 					continue;
 				}
-				$novel->fetched_at = time();
-				$novel->save();
 				$this->fetchQueueService->push([
 					'novel_id' => $novel->id
 				]);

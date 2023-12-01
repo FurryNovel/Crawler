@@ -40,7 +40,6 @@ class Novel extends Model {
 	protected array $casts = [
 		'tags' => 'json',
 		'ext_data' => 'json',
-		'fetched_at' => 'timestamp',
 	];
 	
 	protected array $hidden = [

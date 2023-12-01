@@ -5,6 +5,7 @@ namespace App\Task;
 use App\FetchRule\FetchRule;
 use App\Model\Chapter;
 use App\Model\Novel;
+use Carbon\Carbon;
 use GuzzleHttp\Exception\GuzzleException;
 use Hyperf\AsyncQueue\Job;
 
@@ -17,10 +18,14 @@ class FetchSingleNovelTask extends Job {
 	
 	public function handle(): void {
 		$novel_id = $this->params['novel_id'];
-		$novel = Novel::query()->where('id', $novel_id)->first();
+		
+		$novel = Novel::findFromCache($novel_id);
 		if (!$novel) {
 			return;
 		}
+		$novel->fetched_at = Carbon::now();
+		$novel->save();
+		
 		$rule = FetchRule::getRule($novel->source);
 		if (!$rule) {
 			return;
