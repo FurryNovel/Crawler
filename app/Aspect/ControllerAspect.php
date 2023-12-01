@@ -23,19 +23,5 @@ class ControllerAspect extends AbstractAspect {
 		$arguments = array_merge($arguments, $query);
 		$proceedingJoinPoint->arguments['keys']['arguments'] = $arguments;
 		return $proceedingJoinPoint->process();
-//
-//		$injects = [];
-//		foreach ($reflect->getParameters() as $parameter) {
-//			$name = $parameter->getName();
-//			if (isset($arguments[$name])) {
-//				$injects[] = $arguments[$name];
-//			} else if (isset($query[$name])) {
-//				$injects[] = $query[$name];
-//			} else if ($parameter->isOptional()) {
-//				$injects[] = $parameter->getDefaultValue();
-//			} else {
-//				throw new \InvalidArgumentException('method param miss:' . $name);
-//			}
-//		}
 	}
 }
