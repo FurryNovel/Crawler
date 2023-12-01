@@ -65,4 +65,17 @@ class Novel extends Model {
 		}
 		return $this->dataSet->convertTo('zh-cn', null, (array)$value);
 	}
+	
+	function getCoverAttribute($value): string {
+		return str_replace(
+			[
+				'i.pximg.net'
+			],
+			[
+				//'i.pixiv.re',
+				'pixiv.545551320.workers.dev'
+			],
+			$value
+		);
+	}
 }
