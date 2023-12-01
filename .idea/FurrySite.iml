@@ -133,6 +133,7 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/fukuball/jieba-php" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/hyperf/rate-limit" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/hyperf/token-bucket" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/hyperf/translation" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/malkusch/lock" />
     </content>
     <orderEntry type="inheritedJdk" />

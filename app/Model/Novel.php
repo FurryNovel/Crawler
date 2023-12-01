@@ -4,6 +4,7 @@ namespace App\Model;
 
 use App\DataSet\DataSet;
 use App\Model\Model;
+use App\Utils\Utils;
 use Carbon\Carbon;
 use Hyperf\Database\Model\Relations\HasMany;
 use Hyperf\Database\Model\Relations\HasOne;
@@ -63,7 +64,7 @@ class Novel extends Model {
 		if (is_string($value)) {
 			$value = json_decode($value, true);
 		}
-		return $this->dataSet->convertTo('zh-cn', null, (array)$value);
+		return $this->dataSet->convertTo(Utils::getVisitorLanguage(), null, (array)$value);
 	}
 	
 	function getCoverAttribute($value): string {

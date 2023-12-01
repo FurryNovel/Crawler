@@ -133,6 +133,7 @@
       <path value="$PROJECT_DIR$/vendor/hyperf/token-bucket" />
       <path value="$PROJECT_DIR$/vendor/hyperf/rate-limit" />
       <path value="$PROJECT_DIR$/vendor/malkusch/lock" />
+      <path value="$PROJECT_DIR$/vendor/hyperf/translation" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.0" />

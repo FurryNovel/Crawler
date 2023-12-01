@@ -40,14 +40,14 @@ class DataSet {
 						or in_array($tag, $v)
 					) {
 						switch ($to) {
-							case 'zh-cn':
+							case 'zh_CN':
 								$tag = $this->filterByZHCN($v)[0] ?? $v;
 								break;
-							case 'zh-tw':
+							case 'zh_TW':
 								$tag = $this->filterByZHTW($v)[0] ?? $v;
 								break;
 							default:
-							case 'en-us':
+							case 'en_US':
 								$tag = $k;
 								break;
 						}

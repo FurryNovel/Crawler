@@ -6,7 +6,7 @@ use Hyperf\Context\ApplicationContext;
 use Hyperf\HttpServer\Contract\RequestInterface;
 
 class Utils {
-	static public function ip() {
+	static public function getVisitorIP() {
 		$request = ApplicationContext::getContainer()->get(RequestInterface::class);
 		$res = $request->getServerParams();
 		if (isset($res['http_client_ip'])) {
@@ -18,6 +18,20 @@ class Utils {
 			return $arr[0];
 		} else {
 			return $res['remote_addr'];
+		}
+	}
+	
+	static public function getVisitorLanguage(): string {
+		$request = ApplicationContext::getContainer()->get(RequestInterface::class);
+		$res = $request->getHeader('accept-language');
+		if (isset($res[0])) {
+			$arr = explode(',', $res[0]);
+			if (isset($arr[0])) {
+				$arr[0] = str_replace('-', '_', $arr[0]);
+			}
+			return $arr[0] ?? 'zh_CN';
+		} else {
+			return 'zh_CN';
 		}
 	}
 }

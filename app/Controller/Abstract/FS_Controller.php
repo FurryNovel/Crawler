@@ -13,6 +13,8 @@ declare(strict_types = 1);
 namespace App\Controller\Abstract;
 
 use App\Service\UserService;
+use App\Utils\Utils;
+use Hyperf\Contract\TranslatorInterface;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\HttpServer\Contract\ResponseInterface;
@@ -28,11 +30,21 @@ abstract class FS_Controller {
 	protected RequestInterface $request;
 	#[Inject]
 	protected ResponseInterface $response;
-	
 	#[Inject]
 	protected AuthManager $auth;
 	#[Inject]
 	protected UserService $userService;
+	#[Inject]
+	protected TranslatorInterface $translator;
+	
+	protected function trans($key) {
+		$this->translator->setLocale(Utils::getVisitorLanguage());
+		$trans = $this->translator->trans('global.' . $key);
+		if ($trans === 'global.' . $key) {
+			return $key;
+		}
+		return $trans;
+	}
 	
 	protected function success($data = null, $message = 'success', $code = 200): array {
 		if ($data instanceof LengthAwarePaginator) {
@@ -48,7 +60,7 @@ abstract class FS_Controller {
 		}
 		return [
 			'code' => $code,
-			'message' => $message,
+			'message' => $this->trans('global.' . $message),
 			'data' => $data
 		];
 	}
@@ -56,7 +68,7 @@ abstract class FS_Controller {
 	protected function error($message = 'error', $code = 500): array {
 		return [
 			'code' => $code,
-			'message' => $message,
+			'message' => $this->trans('global.' . $message),
 		];
 	}
 }
