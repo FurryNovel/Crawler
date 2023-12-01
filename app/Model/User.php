@@ -61,10 +61,14 @@ class User extends Model implements Authenticatable {
 		if (!$user) {
 			return null;
 		}
-		if (!password_verify(base64_encode('kk_novel_' . $user->name), $user->password)) {
+		$is_wrong = !password_verify($password, $user->password);
+		if (
+			$is_wrong
+			and password_verify(base64_encode('kk_novel_' . $user->name), $user->password)
+		) {
 			throw new \Exception('认领作者账号，请联系管理员 admin@tigerkk.me');
 		}
-		if (!password_verify($password, $user->password)) {
+		if ($is_wrong) {
 			return null;
 		}
 		return $user;
