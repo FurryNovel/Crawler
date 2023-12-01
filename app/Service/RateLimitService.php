@@ -29,6 +29,6 @@ class RateLimitService {
 	
 	function getKey(ProceedingJoinPoint $proceedingJoinPoint): string {
 		$user = $this->userService->getCurrent();
-		return $proceedingJoinPoint->className . ':' . $proceedingJoinPoint->methodName . ':' . ($user->id ?? Utils::ip());
+		return $proceedingJoinPoint->className . ':' . $proceedingJoinPoint->methodName . ':' . ($user->id ?? Utils::getVisitorIP());
 	}
 }
