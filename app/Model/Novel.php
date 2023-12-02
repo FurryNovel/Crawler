@@ -30,7 +30,7 @@ use Hyperf\Di\Annotation\Inject;
  * @property Carbon $fetched_at 获取时间
  */
 class Novel extends Model {
-	#[Inject(lazy: true)]
+	#[Inject]
 	protected DataSet $dataSet;
 	
 	const STATUS_PENDING = 'pending';
