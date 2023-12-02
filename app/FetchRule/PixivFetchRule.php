@@ -43,8 +43,8 @@ class PixivFetchRule extends FetchRule {
 		$data = $response['body']['novel']['data'];
 		return array_map(function ($novel) {
 			$tags = $novel['tags'];
-			if ($novel['aiType']) {
-				$tags[] = 'AI生成';
+			if ($novel['aiType'] == 2) {
+				$tags[] = 'AI Generated';
 			}
 			if ($novel['language']) {
 				$tags[] = $novel['language'];
@@ -72,8 +72,8 @@ class PixivFetchRule extends FetchRule {
 		$response = json_decode($response->getBody()->getContents(), true);
 		$novel = $response['body'];
 		$tags = $novel['tags'] ?? [];
-		if ($novel['aiType']) {
-			$tags[] = 'AI生成';
+		if ($novel['aiType'] == 2) {
+			$tags[] = 'AI Generated';
 		}
 		if ($novel['language']) {
 			$tags[] = $novel['language'];
