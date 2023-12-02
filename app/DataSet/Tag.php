@@ -1,6 +1,10 @@
 <?php
 
 return [
+	'novel' => [
+		'小说',
+		'小説',
+	],
 	'txt' => [
 		'txt'
 	],
@@ -70,9 +74,9 @@ return [
 	'Gay' => [
 		'Gay',
 		'BL',
+		'男同',
 		'腐向け',
 		'ゲイ',
-		'男同',
 	],
 	'Lesbian' => [
 		'Lesbian',
@@ -96,9 +100,9 @@ return [
 	],
 	'Gay furry' => [
 		'Gay Furry',
+		'兽人同性',
 		'ケモホモ',
 		'ホモケモ',
-		'兽人同性',
 	],
 	'Chibi Furry' => [
 		'ケモロリ',
@@ -460,5 +464,8 @@ return [
 	'R18G Castrated' => [
 		'Castrated',
 		'阉割',
+	],
+	'AI Generated' => [
+		'AI生成'
 	],
 ];
