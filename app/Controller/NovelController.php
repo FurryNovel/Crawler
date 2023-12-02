@@ -32,14 +32,14 @@ class NovelController extends FS_Controller {
 	}
 	
 	function byTag(?string $tag = 'sfw'): array {
-		return $this->success(Novel::where(function (Builder $query) use ($tag) {
+		return $this->success(Novel::with(['author'])->where(function (Builder $query) use ($tag) {
 			$query->where('status', Novel::STATUS_PUBLISH);
 			$query->where('tags', 'like', '%' . $tag . '%');
 		})->paginate());
 	}
 	
 	function bySearch(string $keyword): array {
-		return $this->success(Novel::where(function (Builder $query) use ($keyword) {
+		return $this->success(Novel::with(['author'])->where(function (Builder $query) use ($keyword) {
 			$query->where('status', Novel::STATUS_PUBLISH);
 			$query->where('name', 'like', '%' . $keyword . '%');
 		})->paginate());
@@ -59,7 +59,8 @@ class NovelController extends FS_Controller {
 	
 	function latest(): array {
 		return $this->success(
-			Novel::where('status', Novel::STATUS_PUBLISH)
+			Novel::with(['author'])
+				->where('status', Novel::STATUS_PUBLISH)
 				->orderBy('created_at', 'desc')
 				->paginate()
 		);
