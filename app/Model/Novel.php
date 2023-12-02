@@ -30,12 +30,13 @@ use Hyperf\Di\Annotation\Inject;
  * @property Carbon $fetched_at 获取时间
  */
 class Novel extends Model {
+	#[Inject(lazy: true)]
+	protected DataSet $dataSet;
+	
 	const STATUS_PENDING = 'pending';
 	const STATUS_PUBLISH = 'publish';
 	protected ?string $table = 'novel';
 	
-	#[Inject]
-	protected DataSet $dataSet;
 	
 	protected array $casts = [
 		'tags' => 'json',
@@ -54,16 +55,16 @@ class Novel extends Model {
 		return $this->hasMany(Chapter::class, 'novel_id', 'id');
 	}
 	
-	function save(array $options = []): bool {
-		$this->tags = $this->dataSet->convertToPattern(null, $this->tags);
-		return parent::save($options);
-	}
-	
 	function getTagsAttribute($value): array {
 		if (is_string($value)) {
 			$value = json_decode($value, true);
 		}
 		return $this->dataSet->convertTo(Utils::getVisitorLanguage(), null, (array)$value);
+	}
+	
+	function setTagsAttribute($value): void {
+		$dataSet = \Hyperf\Support\make(DataSet::class);
+		$this->attributes['tags'] = $this->asJson($dataSet->convertToPattern(null, (array)$value));
 	}
 	
 	function getCoverAttribute($value): string {

@@ -26,7 +26,7 @@ use Hyperf\Di\Annotation\Inject;
  * @property Carbon $updated_at
  */
 class Chapter extends Model {
-	#[Inject]
+	#[Inject(lazy: true)]
 	protected DataSet $dataSet;
 	
 	const STATUS_PENDING = 'pending';
