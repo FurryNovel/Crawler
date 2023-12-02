@@ -24,6 +24,7 @@ class NovelController extends FS_Controller {
 				'recommend' => $this->byTag(),
 				'tag' => $this->byTag($command),
 				'search' => $this->bySearch($command),
+				'latest' => $this->latest(),
 				default => $this->error('参数错误'),
 			};
 		}
@@ -53,6 +54,14 @@ class NovelController extends FS_Controller {
 				$query->where('novel_id', $novel_id);
 				$query->where('status', Chapter::STATUS_PUBLISH);
 			})->paginate(null, ['id', 'name', 'tags', 'text_count', 'word_count', 'created_at', 'updated_at'])
+		);
+	}
+	
+	function latest(): array {
+		return $this->success(
+			Novel::where('status', Novel::STATUS_PUBLISH)
+				->orderBy('created_at', 'desc')
+				->paginate()
 		);
 	}
 }
