@@ -14,10 +14,13 @@ namespace App\Model;
 
 use App\Model\Scope\AuthorScope;
 use Hyperf\Context\ApplicationContext;
+use Hyperf\Database\Model\Collection;
 use Hyperf\DbConnection\Model\Model as BaseModel;
 use Hyperf\ModelCache\Cacheable;
 use Hyperf\ModelCache\CacheableInterface;
 use Hyperf\ModelCache\Manager;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 abstract class Model extends BaseModel implements CacheableInterface {
 	use Cacheable;
@@ -42,4 +45,22 @@ abstract class Model extends BaseModel implements CacheableInterface {
 		$model->load($model->with);
 		return $model;
 	}
+	
+	/**
+	 * Fetch models from cache.
+	 * @param array $ids
+	 * @return Collection<int, self>
+	 * @throws ContainerExceptionInterface
+	 * @throws NotFoundExceptionInterface
+	 */
+	public static function findManyFromCache(array $ids): Collection {
+		$container = ApplicationContext::getContainer();
+		$manager = $container->get(Manager::class);
+		
+		$ids = array_unique($ids);
+		return $manager->findManyFromCache($ids, static::class)->each(function (Model $model) {
+			$model->load($model->with);
+		});
+	}
+	
 }
