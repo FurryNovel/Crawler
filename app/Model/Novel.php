@@ -37,14 +37,21 @@ class Novel extends Model {
 	const STATUS_PUBLISH = 'publish';
 	protected ?string $table = 'novel';
 	
+	protected array $with = [
+		'author'
+	];
 	
 	protected array $casts = [
 		'tags' => 'json',
 		'ext_data' => 'json',
 	];
 	
+	protected array $dates = [
+		'fetched_at',
+	];
+	
 	protected array $hidden = [
-		'chapters'
+		'chapters',
 	];
 	
 	function author(): HasOne {

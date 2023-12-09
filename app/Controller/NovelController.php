@@ -17,7 +17,7 @@ class NovelController extends FS_Controller {
 		if (is_numeric($key)) {
 			return match ($command) {
 				'chapter' => $this->chapters($key, $other),
-				default => $this->success(Novel::findFromCache($key)),
+				default => $this->novel($key),
 			};
 		} else if (is_string($key)) {
 			return match ($key) {
@@ -32,17 +32,25 @@ class NovelController extends FS_Controller {
 	}
 	
 	function byTag(?string $tag = 'sfw'): array {
-		return $this->success(Novel::with(['author'])->where(function (Builder $query) use ($tag) {
+		return $this->success(Novel::where(function (Builder $query) use ($tag) {
 			$query->where('status', Novel::STATUS_PUBLISH);
 			$query->where('tags', 'like', '%' . $tag . '%');
 		})->paginate());
 	}
 	
 	function bySearch(string $keyword): array {
-		return $this->success(Novel::with(['author'])->where(function (Builder $query) use ($keyword) {
+		return $this->success(Novel::where(function (Builder $query) use ($keyword) {
 			$query->where('status', Novel::STATUS_PUBLISH);
 			$query->where('name', 'like', '%' . $keyword . '%');
 		})->paginate());
+	}
+	
+	function novel(string $novel_id): array {
+		$novel = Novel::findFromCache($novel_id);
+		if ($novel->status !== Novel::STATUS_PUBLISH) {
+			return $this->error('小说未公开');
+		}
+		return $this->success($novel);
 	}
 	
 	function chapters(string $novel_id, ?string $chapter_id = null): array {
