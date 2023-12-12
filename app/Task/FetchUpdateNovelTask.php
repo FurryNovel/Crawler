@@ -20,7 +20,7 @@ class FetchUpdateNovelTask {
 	
 	public function execute(): void {
 		Novel::where(function (Builder $query) {
-			$query->where('fetched_at', '>', time() + 3600 * 24);
+			$query->where('fetched_at', '>', time() - 3600 * 8);
 		})->chunkById(10, function (Collection $novels) {
 			$novels->each(function (Novel $novel) {
 				$rule = FetchRule::getRule($novel->source);
