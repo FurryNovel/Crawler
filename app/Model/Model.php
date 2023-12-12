@@ -42,7 +42,9 @@ abstract class Model extends BaseModel implements CacheableInterface {
 		$container = ApplicationContext::getContainer();
 		$manager = $container->get(Manager::class);
 		$model = $manager->findFromCache($id, static::class);
-		$model->load($model->with);
+		if ($model) {
+			$model->load($model->with);
+		}
 		return $model;
 	}
 	
