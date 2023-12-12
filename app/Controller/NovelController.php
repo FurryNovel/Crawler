@@ -47,7 +47,7 @@ class NovelController extends FS_Controller {
 	
 	function novel(string $novel_id): array {
 		$novel = Novel::findFromCache($novel_id);
-		if ($novel->status !== Novel::STATUS_PUBLISH) {
+		if (!$novel or $novel->status !== Novel::STATUS_PUBLISH) {
 			return $this->error('小说未公开');
 		}
 		return $this->success($novel);
@@ -67,8 +67,7 @@ class NovelController extends FS_Controller {
 	
 	function latest(): array {
 		return $this->success(
-			Novel::with(['author'])
-				->where('status', Novel::STATUS_PUBLISH)
+			Novel::where('status', Novel::STATUS_PUBLISH)
 				->orderBy('created_at', 'desc')
 				->paginate()
 		);
