@@ -44,6 +44,7 @@ class Novel extends Model {
 	protected array $casts = [
 		'tags' => 'json',
 		'ext_data' => 'json',
+		'view_count' => 'int'
 	];
 	
 	protected array $dates = [
@@ -60,6 +61,10 @@ class Novel extends Model {
 	
 	function chapters(): HasMany {
 		return $this->hasMany(Chapter::class, 'novel_id', 'id');
+	}
+	
+	function latestChapters(): HasMany {
+		return $this->hasMany(Chapter::class, 'novel_id', 'id')->orderByDesc('created_at')->limit(3);
 	}
 	
 	function getTagsAttribute($value): array {

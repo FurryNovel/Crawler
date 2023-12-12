@@ -4,6 +4,7 @@ namespace App\Model;
 
 use App\DataSet\DataSet;
 use App\Model\Model;
+use App\Utils\Utils;
 use Carbon\Carbon;
 use Fukuball\Jieba\JiebaAnalyse;
 use Hyperf\Database\Model\Relations\HasOne;
@@ -56,4 +57,17 @@ class Chapter extends Model {
 		$this->tags = array_keys(JiebaAnalyse::extractTags(implode(' ', $tags), 30));
 		return parent::save($options);
 	}
+	
+	function getTagsAttribute($value): array {
+		if (is_string($value)) {
+			$value = json_decode($value, true);
+		}
+		return $this->dataSet->convertTo(Utils::getVisitorLanguage(), null, (array)$value);
+	}
+	
+	function setTagsAttribute($value): void {
+		$dataSet = \Hyperf\Support\make(DataSet::class);
+		$this->attributes['tags'] = $this->asJson($dataSet->convertToPattern(null, (array)$value));
+	}
+	
 }

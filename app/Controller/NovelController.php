@@ -50,6 +50,7 @@ class NovelController extends FS_Controller {
 		if (!$novel or $novel->status !== Novel::STATUS_PUBLISH) {
 			return $this->error('小说未公开');
 		}
+		$novel->load(['latestChapters']);
 		return $this->success($novel);
 	}
 	
