@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 /**
  * This file is part of Hyperf.
  *
@@ -10,4 +10,5 @@ declare(strict_types=1);
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
 return [
+	\Hyperf\Crontab\Strategy\StrategyInterface::class => \Hyperf\Crontab\Strategy\CoroutineStrategy::class,
 ];
