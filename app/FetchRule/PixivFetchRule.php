@@ -56,7 +56,10 @@ class PixivFetchRule extends FetchRule {
 				$novel['userId'],
 				$novel['cover']['urls']['original'],
 				$novel['caption'],
-				$tags
+				$tags,
+				[
+					'isOneshot' => $novel['isOneshot'],
+				]
 			);
 		}, $data);
 	}
@@ -85,7 +88,8 @@ class PixivFetchRule extends FetchRule {
 			$novel['userId'],
 			$novel['cover']['urls']['original'],
 			$novel['caption'],
-			$tags
+			$tags,
+			[]
 		);
 	}
 	

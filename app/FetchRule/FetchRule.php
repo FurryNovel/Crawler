@@ -9,13 +9,15 @@ use GuzzleHttp\Exception\GuzzleException;
 /**
  */
 abstract class FetchRule {
+	const RULES = [
+		'pixiv' => PixivFetchRule::class,
+	];
+	
 	static function getRule(string $type): ?self {
-		switch ($type) {
-			case 'pixiv':
-				return new PixivFetchRule();
-			default:
-				return null;
+		if (!isset(self::RULES[$type])) {
+			return null;
 		}
+		return new self::RULES[$type]();
 	}
 	
 	abstract static function getType(): string;
@@ -76,8 +78,10 @@ class NovelInfo {
 	public string $desc;
 	public array $tags;
 	
+	public array $options;
 	
-	public function __construct(string $id, string $name, string $author, string $author_id, string $cover, string $desc, array $tags) {
+	
+	public function __construct(string $id, string $name, string $author, string $author_id, string $cover, string $desc, array $tags, array $options) {
 		$this->id = $id;
 		$this->name = $name;
 		$this->author = $author;
@@ -85,6 +89,11 @@ class NovelInfo {
 		$this->cover = $cover;
 		$this->desc = $desc;
 		$this->tags = $tags;
+		$this->options = $options;
+	}
+	
+	function isOneshot(): bool {
+		return $this->options['oneshot'] ?? false;
 	}
 }
 
