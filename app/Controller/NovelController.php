@@ -24,6 +24,7 @@ class NovelController extends FS_Controller {
 				'recommend' => $this->byTag(),
 				'tag' => $this->byTag($command),
 				'search' => $this->bySearch($command),
+				'user' => $this->byUser($command),
 				'latest' => $this->latest(),
 				default => $this->error('参数错误'),
 			};
@@ -42,6 +43,13 @@ class NovelController extends FS_Controller {
 		return $this->success(Novel::where(function (Builder $query) use ($keyword) {
 			$query->where('status', Novel::STATUS_PUBLISH);
 			$query->where('name', 'like', '%' . $keyword . '%');
+		})->paginate());
+	}
+	
+	function byUser(string $user_id): array {
+		return $this->success(Novel::where(function (Builder $query) use ($user_id) {
+			$query->where('status', Novel::STATUS_PUBLISH);
+			$query->where('user_id', $user_id);
 		})->paginate());
 	}
 	
