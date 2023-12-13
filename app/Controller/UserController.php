@@ -5,6 +5,8 @@ namespace App\Controller;
 
 use App\Controller\Abstract\FS_Controller;
 use App\Middleware\LoginMiddleware;
+use App\Model\Account;
+use App\Model\Author;
 use App\Model\User;
 use App\Service\RateLimitService;
 use Hyperf\Context\ApplicationContext;
@@ -73,6 +75,14 @@ class UserController extends FS_Controller {
 			$user,
 			'修改成功'
 		);
+	}
+	
+	function query(int $id): array {
+		$user = Account::findFromCache($id);
+		if (!$user and $user->status !== User::STATUS_PUBLISH) {
+			return $this->error('用户信息不正确' . $id);
+		}
+		return $this->success($user);
 	}
 	
 }
