@@ -49,7 +49,7 @@ class NovelController extends FS_Controller {
 	function byUser(string $user_id): array {
 		return $this->success(Novel::where(function (Builder $query) use ($user_id) {
 			$query->where('status', Novel::STATUS_PUBLISH);
-			$query->where('user_id', $user_id);
+			$query->where('author_id', $user_id);
 		})->paginate());
 	}
 	
