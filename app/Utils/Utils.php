@@ -23,9 +23,13 @@ class Utils {
 	
 	static public function getVisitorLanguage(): string {
 		$request = ApplicationContext::getContainer()->get(RequestInterface::class);
-		$lang = $request->getHeaderLine('x-language');
-		if ($lang) {
-			return str_replace('-', '_', $lang);
+		$res = $request->getHeader('accept-language');
+		if (isset($res[0])) {
+			$arr = explode(',', $res[0]);
+			if (isset($arr[0])) {
+				$arr[0] = str_replace('-', '_', $arr[0]);
+			}
+			return $arr[0] ?? 'zh_CN';
 		} else {
 			return 'zh_CN';
 		}
