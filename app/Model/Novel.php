@@ -91,4 +91,12 @@ class Novel extends Model {
 			$value
 		);
 	}
+	
+	function touchField($field = 'fetched_at'): bool {
+		$this->timestamps = false;
+		$this->{$field} = Carbon::now();
+		$bool = $this->save();
+		$this->timestamps = true;
+		return $bool;
+	}
 }

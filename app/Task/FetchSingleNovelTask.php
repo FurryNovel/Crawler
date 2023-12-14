@@ -24,8 +24,7 @@ class FetchSingleNovelTask extends Job {
 		if (!$novel) {
 			return;
 		}
-		$novel->fetched_at = Carbon::now();
-		$novel->save();
+		$novel->touchField('fetched_at');
 		
 		$rule = FetchRule::getRule($novel->source);
 		if (!$rule) {

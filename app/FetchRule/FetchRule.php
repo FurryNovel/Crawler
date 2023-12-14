@@ -17,7 +17,7 @@ abstract class FetchRule {
 		if (!isset(self::RULES[$type])) {
 			return null;
 		}
-		return new self::RULES[$type]();
+		return new (self::RULES[$type])();
 	}
 	
 	abstract static function getType(): string;
