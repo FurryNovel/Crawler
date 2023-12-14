@@ -13,7 +13,7 @@ use Hyperf\Database\Model\Collection;
 use Hyperf\Database\Model\Builder;
 use Hyperf\Di\Annotation\Inject;
 
-#[Crontab(rule: "0 4,12,16,20 * * *", name: "FetchUpdateNovelTask", callback: "execute", memo: "采集小说任务")]
+#[Crontab(rule: "*/5 * * * *", name: "FetchUpdateNovelTask", callback: "execute", memo: "采集小说任务")]
 class FetchUpdateNovelTask {
 	#[Inject]
 	protected FetchQueueService $fetchQueueService;
