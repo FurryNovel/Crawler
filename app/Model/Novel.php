@@ -106,7 +106,7 @@ class Novel extends Model {
 	
 	function isOneShot(): bool {
 		$ext_data = $this->ext_data;
-		return $ext_data['is_one_shot'] ?? false;
+		return $ext_data['oneshot'] ?? false;
 	}
 	
 	static function fromFetchRule(FetchRule $rule, NovelInfo $novelInfo): static {
@@ -141,7 +141,9 @@ class Novel extends Model {
 				'source' => $rule->getType(),
 				'source_id' => $novelInfo->id,
 				'status' => Novel::STATUS_PUBLISH,
-				'ext_data' => [],
+				'ext_data' => [
+					'oneshot' => $novelInfo->isOneshot()
+				],
 			]);
 			$novel->save();
 		}

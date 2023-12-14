@@ -26,8 +26,8 @@ class PixivFetchRule extends FetchRule {
 	function fetchNovelList(string $page = '1'): array {
 		//https://www.pixiv.net/ajax/search/novels/%E3%82%B1%E3%83%A2%E3%83%9B%E3%83%A2?word=%E3%82%B1%E3%83%A2%E3%83%9B%E3%83%A2&order=date_d&mode=all&p=1&s_mode=s_tag_full&work_lang=zh-cn&gs=1&lang=zh&version=42055d64ddbad5c0a69639e157b82e921bf63b31
 		$response = $this->getRequest()
-			->post('/ajax/search/novels/furry', [
-				'params' => [
+			->get('/ajax/search/novels/furry', [
+				'query' => [
 					'word' => 'furry',
 					'order' => 'date_d',
 					'mode' => 'all',
@@ -43,22 +43,23 @@ class PixivFetchRule extends FetchRule {
 		$data = $response['body']['novel']['data'];
 		return array_map(function ($novel) {
 			$tags = $novel['tags'];
-			if ($novel['aiType'] == 2) {
+			if (isset($novel['aiType']) and $novel['aiType'] == 2) {
 				$tags[] = 'AI Generated';
 			}
-			if ($novel['language']) {
+			if (isset($novel['language'])) {
 				$tags[] = $novel['language'];
 			}
+			var_dump($novel);
 			return new NovelInfo(
 				$novel['id'],
 				$novel['title'],
 				$novel['userName'],
 				$novel['userId'],
-				$novel['cover']['urls']['original'],
-				$novel['caption'],
+				$novel['cover']['urls']['original'] ?? '',
+				$novel['caption'] ?? '',
 				$tags,
 				[
-					'isOneshot' => $novel['isOneshot'],
+					'isOneshot' => $novel['isOneshot'] ?? false,
 				]
 			);
 		}, $data);
@@ -81,16 +82,35 @@ class PixivFetchRule extends FetchRule {
 		if ($novel['language']) {
 			$tags[] = $novel['language'];
 		}
-		return new NovelInfo(
-			$novel['id'],
-			$novel['title'],
-			$novel['userName'],
-			$novel['userId'],
-			$novel['cover']['urls']['original'],
-			$novel['caption'],
-			$tags,
-			[]
-		);
+		$oneshot = $novel['isOneshot'] ?? false;
+		if (!$oneshot) {
+			return new NovelInfo(
+				$novel['id'],
+				$novel['title'],
+				$novel['userName'],
+				$novel['userId'],
+				$novel['cover']['urls']['original'] ?? '',
+				$novel['caption'] ?? '',
+				$tags,
+				[
+					'isOneshot' => false,
+				]
+			);
+		} else {
+			return new NovelInfo(
+				$novel['novelId'],
+				$novel['title'],
+				$novel['userName'],
+				$novel['userId'],
+				$novel['cover']['urls']['original'] ?? '',
+				$novel['caption'] ?? '',
+				$tags,
+				[
+					'oneshotId' => $novel['id'],
+					'isOneshot' => false,
+				]
+			);
+		}
 	}
 	
 	function fetchChapterList(string $novelId, string $page = '1'): array {

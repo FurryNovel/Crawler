@@ -37,6 +37,7 @@ class Chapter extends Model {
 	
 	protected array $casts = [
 		'tags' => 'json',
+		'ext_data' => 'json',
 	];
 	
 	protected array $hidden = [
