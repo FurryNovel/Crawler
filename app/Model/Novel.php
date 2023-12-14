@@ -99,4 +99,9 @@ class Novel extends Model {
 		$this->timestamps = true;
 		return $bool;
 	}
+	
+	function isOneShot(): bool {
+		$ext_data = $this->ext_data;
+		return $ext_data['is_one_shot'] ?? false;
+	}
 }

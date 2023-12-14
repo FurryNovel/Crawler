@@ -26,6 +26,10 @@ class FetchSingleNovelTask extends Job {
 		}
 		$novel->touchField('fetched_at');
 		
+		if ($novel->isOneShot()) {
+			return;
+		}
+		
 		$rule = FetchRule::getRule($novel->source);
 		if (!$rule) {
 			return;
