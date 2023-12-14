@@ -3,9 +3,13 @@
 namespace App\Model;
 
 use App\DataSet\DataSet;
+use App\FetchRule\FetchRule;
+use App\FetchRule\NovelInfo;
 use App\Model\Model;
+use App\Service\FetchQueueService;
 use App\Utils\Utils;
 use Carbon\Carbon;
+use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\Relations\HasMany;
 use Hyperf\Database\Model\Relations\HasOne;
 use Hyperf\Di\Annotation\Inject;
@@ -103,5 +107,49 @@ class Novel extends Model {
 	function isOneShot(): bool {
 		$ext_data = $this->ext_data;
 		return $ext_data['is_one_shot'] ?? false;
+	}
+	
+	static function fromFetchRule(FetchRule $rule, NovelInfo $novelInfo): static {
+		$novelInfo->author = $novelInfo->author ?? '佚名';
+		$author = Author::where(function (Builder $query) use ($novelInfo) {
+			$query->where('name', $novelInfo->author);
+		})->first();
+		if (!$author) {
+			$authorInfo = $rule->fetchAuthorInfo($novelInfo->author_id);
+			$author = Author::register(
+				User::TYPE_AUTHOR,
+				$authorInfo->name,
+				base64_encode('kk_novel_' . $authorInfo->name),
+				[]
+			);
+		}
+		/**
+		 * @var Novel $novel
+		 */
+		$novel = Novel::where(function (Builder $query) use ($novelInfo) {
+			$query->where('source_id', $novelInfo->id);
+		})->first();
+		if (!$novel) {
+			$novel = new Novel([
+				'author_id' => $author->id,
+				'name' => $novelInfo->name,
+				'cover' => $novelInfo->cover,
+				'desc' => $novelInfo->desc,
+				'tags' => $novelInfo->tags,
+				'view_count' => 0,
+				'furry_weight' => 0,
+				'source' => $rule->getType(),
+				'source_id' => $novelInfo->id,
+				'status' => Novel::STATUS_PUBLISH,
+				'ext_data' => [],
+			]);
+			$novel->save();
+		}
+		$container = \Hyperf\Context\ApplicationContext::getContainer();
+		$fetchQueueService = $container->get(FetchQueueService::class);
+		$fetchQueueService->push([
+			'novel_id' => $novel->id
+		]);
+		return $novel;
 	}
 }
