@@ -27,7 +27,7 @@ use Hyperf\Di\Annotation\Inject;
  * @property string $source_id 来源ID
  * @property array $ext_data 额外信息
  * @property int $view_count 阅读量
- * @property int $sync_status 同步状态:0正常,1同步中
+ * @property int $sync_status 同步状态:0正常,1同步中,2规则不存在
  * @property string $status 状态
  * @property Carbon $created_at
  * @property Carbon $updated_at

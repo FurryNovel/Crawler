@@ -28,6 +28,7 @@ class FetchSingleNovelTask extends Job {
 		
 		$rule = FetchRule::getRule($novel->source);
 		if (!$rule) {
+			$novel->touchField('sync_status', 2);
 			return;
 		}
 		
@@ -72,6 +73,7 @@ class FetchSingleNovelTask extends Job {
 			} while (!empty($chapterList));
 		} else {
 			if (Chapter::where('source_id', $novel->source_id)->first()) {
+				$novel->touchField('sync_status', 0);
 				return;
 			}
 			$chapter = $this->handleException(function () use ($novel, $rule) {
@@ -97,8 +99,7 @@ class FetchSingleNovelTask extends Job {
 				]);
 			}
 		}
-		
-		
+		$novel->touchField('sync_status', 0);
 	}
 	
 	function handleException(callable $callback) {
