@@ -33,7 +33,7 @@ abstract class FetchRule {
 	 * @return NovelInfo[]
 	 * @throws GuzzleException
 	 */
-	abstract function fetchNovelList(string $page = '1'): array;
+	abstract function fetchNovelList(string $tag = 'furry', string $page = '1'): array;
 	
 	/**
 	 * 获取小说详情
