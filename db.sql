@@ -55,7 +55,7 @@ create table novel
     source_id    varchar(64)                             null,
     ext_data     text                                    null,
     view_count   int                                     null,
-    furry_weight decimal(5, 2)                           null,
+    sync_status  int                           null,
     status       varchar(64)                             null,
     created_at   timestamp default current_timestamp()   not null,
     updated_at   timestamp default '0000-00-00 00:00:00' not null,

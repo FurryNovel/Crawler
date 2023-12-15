@@ -141,10 +141,10 @@ class Novel extends Model {
 				'desc' => $novelInfo->desc,
 				'tags' => $novelInfo->tags,
 				'view_count' => 0,
-				'furry_weight' => 0,
 				'source' => $rule->getType(),
 				'source_id' => $novelInfo->id,
 				'status' => Novel::STATUS_PUBLISH,
+				'sync_status' => 0,
 				'ext_data' =>
 					$novelInfo->options ?? [
 						'oneshot' => false
