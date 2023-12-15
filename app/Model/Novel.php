@@ -27,7 +27,7 @@ use Hyperf\Di\Annotation\Inject;
  * @property string $source_id 来源ID
  * @property array $ext_data 额外信息
  * @property int $view_count 阅读量
- * @property float $furry_weight furry权重
+ * @property int $sync_status 同步状态:0正常,1同步中
  * @property string $status 状态
  * @property Carbon $created_at
  * @property Carbon $updated_at
@@ -96,9 +96,13 @@ class Novel extends Model {
 		);
 	}
 	
-	function touchField($field = 'fetched_at'): bool {
+	function touchField($field = 'fetched_at', $value = null): bool {
 		$this->timestamps = false;
-		$this->{$field} = Carbon::now();
+		if ($this->{$field} instanceof Carbon) {
+			$this->{$field} = Carbon::now();
+		} else {
+			$this->{$field} = $value;
+		}
 		$bool = $this->save();
 		$this->timestamps = true;
 		return $bool;
@@ -148,9 +152,8 @@ class Novel extends Model {
 			]);
 			$novel->save();
 		}
-		if (!$novel->fetched_at or $novel->fetched_at->isBefore(Carbon::now()->subHours(8))) {
-			$novel->touchField('fetched_at');
-			//投递任务
+		if (!$novel->sync_status) {
+			$novel->touchField('sync_status', 1);
 			$container = \Hyperf\Context\ApplicationContext::getContainer();
 			$fetchQueueService = $container->get(FetchQueueService::class);
 			$fetchQueueService->push([
