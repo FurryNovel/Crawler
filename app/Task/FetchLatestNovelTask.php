@@ -33,8 +33,14 @@ class FetchLatestNovelTask {
 				if (!$last_id) {
 					$max_page = 5;
 				}
+				$is_first = true;
 				while ($page < $max_page) {
-					foreach ($rule->fetchNovelList($tag, $page) as $novelInfo) {
+					$novels = $rule->fetchNovelList($tag, $page);
+					if ($is_first and !empty($novels)) {
+						$cache->set(sprintf('fetch_latest_%s_%s', $rule->getType(), $tag), $novels[0]->id ?? null);
+						$is_first = false;
+					}
+					foreach ($novels as $novelInfo) {
 						if ($novelInfo->id == $last_id) {
 							$max_page = $page;
 							break;
@@ -42,9 +48,6 @@ class FetchLatestNovelTask {
 						Novel::fromFetchRule($rule, $novelInfo);
 					}
 					$page++;
-				}
-				if (!empty($novelInfo)) {
-					$cache->set(sprintf('fetch_latest_%s_%s', $rule->getType(), $tag), $novelInfo->id);
 				}
 			}
 		}

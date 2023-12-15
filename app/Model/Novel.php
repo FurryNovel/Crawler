@@ -148,11 +148,13 @@ class Novel extends Model {
 			]);
 			$novel->save();
 		}
-		$container = \Hyperf\Context\ApplicationContext::getContainer();
-		$fetchQueueService = $container->get(FetchQueueService::class);
-		$fetchQueueService->push([
-			'novel_id' => $novel->id
-		]);
+		if (!$novel->fetched_at or $novel->fetched_at->isBefore(Carbon::now()->subHours(8))) {
+			$container = \Hyperf\Context\ApplicationContext::getContainer();
+			$fetchQueueService = $container->get(FetchQueueService::class);
+			$fetchQueueService->push([
+				'novel_id' => $novel->id
+			]);
+		}
 		return $novel;
 	}
 }
