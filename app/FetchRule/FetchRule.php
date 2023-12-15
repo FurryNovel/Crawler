@@ -93,7 +93,7 @@ class NovelInfo {
 	}
 	
 	function isOneshot(): bool {
-		return $this->options['isOneshot'] ?? false;
+		return $this->options['oneshot'] ?? false;
 	}
 }
 

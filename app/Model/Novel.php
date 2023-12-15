@@ -141,9 +141,10 @@ class Novel extends Model {
 				'source' => $rule->getType(),
 				'source_id' => $novelInfo->id,
 				'status' => Novel::STATUS_PUBLISH,
-				'ext_data' => [
-					'oneshot' => $novelInfo->isOneshot()
-				],
+				'ext_data' =>
+					$novelInfo->options ?? [
+						'oneshot' => false
+					],
 			]);
 			$novel->save();
 		}

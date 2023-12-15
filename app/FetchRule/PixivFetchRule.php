@@ -49,19 +49,35 @@ class PixivFetchRule extends FetchRule {
 			if (isset($novel['language'])) {
 				$tags[] = $novel['language'];
 			}
-			var_dump($novel);
-			return new NovelInfo(
-				$novel['id'],
-				$novel['title'],
-				$novel['userName'],
-				$novel['userId'],
-				$novel['cover']['urls']['original'] ?? '',
-				$novel['caption'] ?? '',
-				$tags,
-				[
-					'isOneshot' => $novel['isOneshot'] ?? false,
-				]
-			);
+			$oneshot = $novel['isOneshot'] ?? false;
+			if (!$oneshot) {
+				return new NovelInfo(
+					$novel['id'],
+					$novel['title'],
+					$novel['userName'],
+					$novel['userId'],
+					$novel['cover']['urls']['original'] ?? '',
+					$novel['caption'] ?? '',
+					$tags,
+					[
+						'oneshot' => false,
+					]
+				);
+			} else {
+				return new NovelInfo(
+					$novel['novelId'],
+					$novel['title'],
+					$novel['userName'],
+					$novel['userId'],
+					$novel['cover']['urls']['original'] ?? '',
+					$novel['caption'] ?? '',
+					$tags,
+					[
+						'oneshotId' => $novel['id'],
+						'oneshot' => true,
+					]
+				);
+			}
 		}, $data);
 	}
 	
@@ -93,7 +109,7 @@ class PixivFetchRule extends FetchRule {
 				$novel['caption'] ?? '',
 				$tags,
 				[
-					'isOneshot' => false,
+					'oneshot' => false,
 				]
 			);
 		} else {
@@ -107,7 +123,7 @@ class PixivFetchRule extends FetchRule {
 				$tags,
 				[
 					'oneshotId' => $novel['id'],
-					'isOneshot' => false,
+					'oneshot' => false,
 				]
 			);
 		}

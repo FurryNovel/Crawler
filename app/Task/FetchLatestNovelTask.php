@@ -15,7 +15,7 @@ use Hyperf\Database\Model\Collection;
 use Hyperf\Database\Model\Builder;
 use Hyperf\Di\Annotation\Inject;
 
-//#[Crontab(rule: "* * * * *", name: "FetchLatestNovelTask", singleton: true, callback: "execute", memo: "采集最新小说任务")]
+#[Crontab(rule: "*/15 * * * *", name: "FetchLatestNovelTask", singleton: true, callback: "execute", memo: "采集最新小说任务")]
 class FetchLatestNovelTask {
 	public function execute(): void {
 		$cache = \FriendsOfHyperf\Helpers\cache();
