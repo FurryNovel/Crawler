@@ -149,6 +149,8 @@ class Novel extends Model {
 			$novel->save();
 		}
 		if (!$novel->fetched_at or $novel->fetched_at->isBefore(Carbon::now()->subHours(8))) {
+			$novel->touchField('fetched_at');
+			//投递任务
 			$container = \Hyperf\Context\ApplicationContext::getContainer();
 			$fetchQueueService = $container->get(FetchQueueService::class);
 			$fetchQueueService->push([
