@@ -37,43 +37,12 @@ class DataSet {
 				continue;
 			}
 			foreach ($ds as $k => $v) {
-				foreach ($tags as &$tag) {
-					if (
-						$k == $tag
-						or in_array($tag, $v)
-					) {
-						switch ($to) {
-							case 'zh_CN':
-								$tag = $this->filterByZHCN($v)[0] ?? $v;
-								break;
-							case 'zh_TW':
-								$tag = $this->filterByZHTW($v)[0] ?? $v;
-								break;
-							default:
-							case 'en_US':
-								$tag = $k;
-								break;
+				$k = strtolower($k);
+				foreach (($v[$to] ?? $v['en_US']) as $translation) {
+					foreach ($tags as &$tag) {
+						if ($tag == $k) {
+							$tag = $translation;
 						}
-					}
-				}
-			}
-		}
-		return $tags;
-	}
-	
-	function convertToPattern(?string $dataset, array $tags): array {
-		foreach ($this->dataset as $dn => $ds) {
-			if ($dataset and $dn !== $dataset) {
-				continue;
-			}
-			
-			foreach ($ds as $k => $v) {
-				foreach ($tags as &$tag) {
-					if (
-						$k == $tag
-						or in_array($tag, $v)
-					) {
-						$tag = $k;
 					}
 				}
 			}
@@ -81,18 +50,22 @@ class DataSet {
 		return array_values(array_unique($tags));
 	}
 	
-	
-	private function filterByZHCN($tags): array {
-		return array_values(array_filter($tags, function ($tag) {
-			return preg_match_all("/^([\x81-\xfe][\x40-\xfe])+$/", $tag, $matches);
-		}));
-	}
-	
-	
-	private function filterByZHTW($tags): array {
-		return array_values(array_filter($tags, function ($tag) {
-			return @iconv('UTF-8', 'GB2312', $tag) === false;
-		}));
+	function convertToPattern(?string $dataset, array $tags): array {
+		foreach ($this->dataset as $dn => $ds) {
+			if ($dataset and $dn !== $dataset) {
+				continue;
+			}
+			foreach ($ds as $k => $v) {
+				foreach ($v as $locale => $translation) {
+					foreach ($tags as &$tag) {
+						if (in_array($tag, $translation)) {
+							$tag = $k;
+						}
+					}
+				}
+			}
+		}
+		return array_values(array_unique(array_map('strtolower', $tags)));
 	}
 	
 	
