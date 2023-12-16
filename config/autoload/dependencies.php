@@ -10,5 +10,5 @@ declare(strict_types = 1);
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
 return [
-	//\Hyperf\Crontab\Strategy\StrategyInterface::class => \Hyperf\Crontab\Strategy\CoroutineStrategy::class,
+	\Hyperf\Crontab\Strategy\StrategyInterface::class => \Hyperf\Crontab\Strategy\CoroutineStrategy::class,
 ];
