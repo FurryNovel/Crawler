@@ -61,13 +61,22 @@ class NovelController extends FS_Controller {
 			return $this->success(Chapter::findFromCache($chapter_id)->makeVisible('content'));
 		}
 		if ($current) {
+			$count = Chapter::where(function (Builder $query) use ($current, $novel_id) {
+				$query->where('novel_id', $novel_id);
+				$query->where('id', '<', $current);
+				$query->where('status', Chapter::STATUS_PUBLISH);
+			})->count('id');
+			$page = (int)ceil($count / 15);
 			return $this->success(
 				Chapter::where(function (Builder $query) use ($current, $novel_id) {
 					$query->where('novel_id', $novel_id);
-					$query->where('id', '>', intval($current) - 15);
-					$query->where('id', '<', intval($current) + 15);
 					$query->where('status', Chapter::STATUS_PUBLISH);
-				})->paginate(null, ['id', 'name', 'tags', 'text_count', 'word_count', 'created_at', 'updated_at'])
+				})->paginate(
+					null,
+					['id', 'name', 'tags', 'text_count', 'word_count', 'created_at', 'updated_at'],
+					'page',
+					$page
+				)
 			);
 		} else {
 			return $this->success(
