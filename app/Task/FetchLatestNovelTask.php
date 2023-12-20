@@ -31,7 +31,7 @@ class FetchLatestNovelTask {
 				$max_page = PHP_INT_MAX;
 				$last_id = $cache->get(sprintf('fetch_latest_%s_%s', $rule->getType(), $tag), null);
 				if (!$last_id) {
-					$max_page = 5;
+					$max_page = 15;
 				}
 				$is_first = true;
 				while ($page < $max_page) {
