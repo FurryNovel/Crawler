@@ -166,7 +166,8 @@ class Novel extends Model {
 	
 	public function created(Saved $event): void {
 		try {
-			foreach ($this->tags as $tag) {
+			$tags = json_decode($this->attributes['tags'] ?? '[]', true);
+			foreach ($tags as $tag) {
 				try {
 					$_ = Tag::where('name', $tag)->first();
 					if (!$_) {
