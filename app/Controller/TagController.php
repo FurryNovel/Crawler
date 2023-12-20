@@ -20,6 +20,6 @@ class TagController extends FS_Controller {
 	
 	#[RequestMapping(path: '', methods: 'get')]
 	function index(): array {
-		return $this->success($this->baseQuery()->paginate(30), '获取成功');
+		return $this->success($this->baseQuery()->select()->get(), '获取成功');
 	}
 }
