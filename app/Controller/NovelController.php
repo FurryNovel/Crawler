@@ -33,7 +33,15 @@ class NovelController extends FS_Controller {
 		}
 		
 		if ($tag) {
-			$query->where('novel.tags', 'like', '%' . $tag . '%');
+			$query->where(function (Builder $query) use ($tag) {
+				$query->where('novel.tags', 'like', '%' . $tag . '%');
+				$query->whereIn('novel.id', function (\Hyperf\Database\Query\Builder $query) use ($tag) {
+					$query->select('novel_id')
+						->from('chapter')
+						->where('chapter.status', Chapter::STATUS_PUBLISH)
+						->where('chapter.tags', 'like', '%' . $tag . '%');
+				}, 'OR');
+			});
 		}
 		if ($keyword) {
 			$query->where('novel.name', 'like', '%' . $keyword . '%');
