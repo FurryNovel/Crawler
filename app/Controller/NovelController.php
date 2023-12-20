@@ -19,16 +19,16 @@ class NovelController extends FS_Controller {
 		$tag = $this->request->input('tag');
 		$keyword = $this->request->input('keyword');
 		$user_id = intval($this->request->input('user_id'));
-		$order = $this->request->input('order', 'latest');
-		$order_by = $this->request->input('order_by', 'desc');
+		$order_by = $this->request->input('order_by', 'latest');
+		$order = $this->request->input('order', 'desc');
 		
-		switch ($order_by) {
+		switch ($order) {
 			case 'desc':
 			case 'asc':
 				break;
 			
 			default:
-				$order_by = 'desc';
+				$order = 'desc';
 				break;
 		}
 		
@@ -42,15 +42,18 @@ class NovelController extends FS_Controller {
 			$query->where('novel.author_id', $user_id);
 		}
 		
-		switch ($order) {
+		switch ($order_by) {
 			case 'latest':
-				$query->orderBy('updated_at', $order_by);
+				$query->orderBy('updated_at', $order);
 				break;
 			case 'popular':
-				$query->orderBy('view_count', $order_by);
+				$query->orderBy('view_count', $order);
 				break;
 			case 'newest':
-				$query->orderBy('created_at', $order_by);
+				$query->orderBy('created_at', $order);
+				break;
+			case 'random':
+				$query->inRandomOrder();
 				break;
 		}
 		return $query;
