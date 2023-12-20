@@ -19,4 +19,9 @@ class Tag extends Model {
 	protected string $primaryKey = 'name';
 	
 	public bool $timestamps = false;
+	
+	protected array $casts = [
+		'name' => 'string',
+		'count' => 'int'
+	];
 }
