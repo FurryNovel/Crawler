@@ -5,6 +5,7 @@ namespace App\Controller;
 
 use App\Controller\Abstract\FS_Controller;
 use App\Controller\Abstract\PublicController;
+use App\DataSet\DataSet;
 use App\FetchRule\FetchRule;
 use App\Model\Novel;
 use App\Model\Tag;
@@ -26,28 +27,32 @@ class IndexController extends FS_Controller {
 		);
 	}
 	
-	function tags() {
-		Novel::chunk(100, function (Collection $novels) {
-			$novels->each(function (Novel $novel) {
-				try {
-					foreach ($novel->tags as $tag) {
-						try {
-							$_ = Tag::where('name', $tag)->first();
-							if (!$_) {
-								$_ = Tag::create([
-									'name' => $tag,
-									'count' => 1,
-								]);
-							}
-						} catch (\Exception $exception) {
-							$_ = Tag::where('name', $tag)->first();
-						}
-						$_->increment('count');
-					}
-				} catch (\Exception $exception) {
-					var_dump($exception->getMessage());
-				}
-			});
-		});
-	}
+	#[Inject]
+	protected DataSet $dataSet;
+
+//	function tags() {
+//		Novel::chunk(100, function (Collection $novels) {
+//			$novels->each(function (Novel $novel) {
+//				try {
+//					$tags = $this->dataSet->convertToPattern(null, $novel->tags);
+//					foreach ($tags as $tag) {
+//						try {
+//							$_ = Tag::where('name', $tag)->first();
+//							if (!$_) {
+//								$_ = Tag::create([
+//									'name' => $tag,
+//									'count' => 1,
+//								]);
+//							}
+//						} catch (\Exception $exception) {
+//							$_ = Tag::where('name', $tag)->first();
+//						}
+//						$_->increment('count');
+//					}
+//				} catch (\Exception $exception) {
+//					var_dump($exception->getMessage());
+//				}
+//			});
+//		});
+//	}
 }
