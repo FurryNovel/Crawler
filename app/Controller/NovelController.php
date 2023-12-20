@@ -6,6 +6,7 @@ namespace App\Controller;
 use App\Controller\Abstract\FS_Controller;
 use App\Model\Chapter;
 use App\Model\Novel;
+use Hyperf\Cache\Annotation\Cacheable;
 use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Query\JoinClause;
 use Hyperf\HttpServer\Annotation\Controller;
@@ -82,6 +83,7 @@ class NovelController extends FS_Controller {
 		return $this->success($novel);
 	}
 	
+	#[Cacheable(prefix: __CLASS__, ttl: 300)]
 	#[RequestMapping(path: '{novel_id:\d+}/chapter[/{chapter_id:\d+}]', methods: 'get')]
 	function chapters(string $novel_id, ?string $chapter_id = null, ?string $current = null): array {
 		if ($chapter_id) {
