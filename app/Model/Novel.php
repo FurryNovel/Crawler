@@ -10,6 +10,7 @@ use App\Service\FetchQueueService;
 use App\Utils\Utils;
 use Carbon\Carbon;
 use Hyperf\Database\Model\Builder;
+use Hyperf\Database\Model\Events\Created;
 use Hyperf\Database\Model\Events\Saved;
 use Hyperf\Database\Model\Relations\HasMany;
 use Hyperf\Database\Model\Relations\HasOne;
@@ -164,7 +165,7 @@ class Novel extends Model {
 		return $novel;
 	}
 	
-	public function created(Saved $event): void {
+	public function created(Created $event): void {
 		try {
 			$tags = json_decode($this->attributes['tags'] ?? '[]', true);
 			foreach ($tags as $tag) {
