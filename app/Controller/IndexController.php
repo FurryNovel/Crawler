@@ -4,7 +4,6 @@ declare(strict_types = 1);
 namespace App\Controller;
 
 use App\Controller\Abstract\FS_Controller;
-use App\Controller\Abstract\PublicController;
 use App\FetchRule\FetchRule;
 use App\Model\Novel;
 use App\Model\User;

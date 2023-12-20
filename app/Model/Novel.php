@@ -10,6 +10,7 @@ use App\Service\FetchQueueService;
 use App\Utils\Utils;
 use Carbon\Carbon;
 use Hyperf\Database\Model\Builder;
+use Hyperf\Database\Model\Events\Saved;
 use Hyperf\Database\Model\Relations\HasMany;
 use Hyperf\Database\Model\Relations\HasOne;
 use Hyperf\Di\Annotation\Inject;
@@ -161,5 +162,25 @@ class Novel extends Model {
 			]);
 		}
 		return $novel;
+	}
+	
+	public function created(Saved $event): void {
+		try {
+			foreach ($this->tags as $tag) {
+				try {
+					$_ = Tag::where('name', $tag)->first();
+					if (!$_) {
+						$_ = Tag::create([
+							'name' => $tag,
+							'count' => 1,
+						]);
+					}
+				} catch (\Throwable $exception) {
+					$_ = Tag::where('name', $tag)->first();
+				}
+				$_->increment('count');
+			}
+		} catch (\Throwable $exception) {
+		}
 	}
 }
