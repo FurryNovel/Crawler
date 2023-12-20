@@ -7,42 +7,58 @@ use App\Controller\Abstract\FS_Controller;
 use App\Model\Chapter;
 use App\Model\Novel;
 use Hyperf\Database\Model\Builder;
+use Hyperf\Database\Query\JoinClause;
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\RequestMapping;
 
 #[Controller]
 class NovelController extends FS_Controller {
-	#[RequestMapping(path: 'tag/{tag:\S+}', methods: 'get')]
-	function byTag(?string $tag = 'sfw'): array {
-		return $this->success(Novel::where(function (Builder $query) use ($tag) {
-			$query->where('status', Novel::STATUS_PUBLISH);
-			$query->where('tags', 'like', '%' . $tag . '%');
-		})->paginate());
+	protected function baseQuery(): Builder {
+		$query = Novel::where('novel.status', Novel::STATUS_PUBLISH);
+		
+		$tag = $this->request->input('tag');
+		$keyword = $this->request->input('keyword');
+		$user_id = intval($this->request->input('user_id'));
+		$order = $this->request->input('order', 'latest');
+		$order_by = $this->request->input('order_by', 'desc');
+		
+		switch ($order_by) {
+			case 'desc':
+			case 'asc':
+				break;
+			
+			default:
+				$order_by = 'desc';
+				break;
+		}
+		
+		if ($tag) {
+			$query->where('novel.tags', 'like', '%' . $tag . '%');
+		}
+		if ($keyword) {
+			$query->where('novel.name', 'like', '%' . $keyword . '%');
+		}
+		if ($user_id) {
+			$query->where('novel.author_id', $user_id);
+		}
+		
+		switch ($order) {
+			case 'latest':
+				$query->orderBy('updated_at', $order_by);
+				break;
+			case 'popular':
+				$query->orderBy('view_count', $order_by);
+				break;
+			case 'newest':
+				$query->orderBy('created_at', $order_by);
+				break;
+		}
+		return $query;
 	}
 	
-	#[RequestMapping(path: 'latest', methods: 'get')]
-	function latest(): array {
-		return $this->success(
-			Novel::where('status', Novel::STATUS_PUBLISH)
-				->orderBy('created_at', 'desc')
-				->paginate()
-		);
-	}
-	
-	#[RequestMapping(path: 'search/{keyword}', methods: 'get')]
-	function bySearch(string $keyword): array {
-		return $this->success(Novel::where(function (Builder $query) use ($keyword) {
-			$query->where('status', Novel::STATUS_PUBLISH);
-			$query->where('name', 'like', '%' . $keyword . '%');
-		})->paginate());
-	}
-	
-	#[RequestMapping(path: 'user/{user_id}', methods: 'get')]
-	function byUser(string $user_id): array {
-		return $this->success(Novel::where(function (Builder $query) use ($user_id) {
-			$query->where('status', Novel::STATUS_PUBLISH);
-			$query->where('author_id', $user_id);
-		})->paginate());
+	#[RequestMapping(path: '', methods: 'get')]
+	function index(): array {
+		return $this->success($this->baseQuery()->paginate(), '获取成功');
 	}
 	
 	#[RequestMapping(path: '{novel_id:\d+}', methods: 'get')]
