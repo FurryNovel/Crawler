@@ -19,7 +19,8 @@ use Hyperf\Di\Annotation\Inject;
 class FetchLatestNovelTask {
 	const TAGS = [
 		'furry',
-		'兽人'
+		'兽人',
+		'ケモノ',
 	];
 	
 	public function execute(): void {
