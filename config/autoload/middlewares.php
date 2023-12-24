@@ -15,6 +15,6 @@ use App\Middleware\CorsMiddleware;
 
 return [
 	'http' => [
-		CorsMiddleware::class,
+		//CorsMiddleware::class,
 	],
 ];
