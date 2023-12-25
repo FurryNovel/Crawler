@@ -11,7 +11,7 @@ use Hyperf\Context\Context;
 class CorsMiddleware implements MiddlewareInterface {
 	public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
 		$response = Context::get(ResponseInterface::class);
-		$response = $response->withHeader('Access-Control-Allow-Origin', '*')
+		$response = $response->withHeader('Access-Control-Allow-Origin', 'https://novel.tigerkk.me')
 			->withHeader('Access-Control-Allow-Credentials', 'true')
 			->withHeader('Access-Control-Allow-Headers', 'DNT,Keep-Alive,User-Agent,Cache-Control,Content-Type,Authorization')
 			->withHeader('Access-Control-Max-Age', 3600);
