@@ -4,6 +4,7 @@ namespace App\FetchRule;
 
 use App\FetchRule\FetchRule;
 use App\Utils\BilibiliSignature;
+use DOMNode;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\HandlerStack;
@@ -11,6 +12,7 @@ use Hyperf\Di\Annotation\Inject;
 use Hyperf\Guzzle\CoroutineHandler;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Rct567\DomQuery\DomQuery;
 
 /**
  * @throws GuzzleException
@@ -125,15 +127,38 @@ class BilibiliFetchRule extends FetchRule {
 		preg_match($pattern, $response, $matches);
 		$chapter = json_decode($matches[1], true);
 		$chapter = $chapter['readInfo'];
-		$chapter['content'] = preg_replace('/<br\s*\/?>/', "\n", $chapter['content']);
-		$chapter['content'] = preg_replace('/<\/p><p>/', "\n", $chapter['content']);
-		$chapter['content'] = preg_replace('/<p>/', '', $chapter['content']);
-		$chapter['content'] = preg_replace('/<\/p>/', '', $chapter['content']);
 		
-		//cut-off
-		$chapter['content'] = preg_replace('/<div\s+class="cut-off">[\s\S]+<\/div>/', '', $chapter['content']);
+		$content = '';
+		$processor = function (DOMNode $node) use (&$content, &$processor) {
+			switch ($node->nodeName) {
+				case 'p':
+					$content .= $node->textContent;
+					break;
+				case 'img':
+					$class = $node->getAttribute('class');
+					if (str_starts_with($class, 'cut-off')) {
+						$content .= "[hr][/hr]";
+						break;
+					}
+					$content .= '[img]' . $node->getAttribute('data-src') . '[/img]';
+					break;
+				case 'figure':
+					foreach ($node->childNodes as $childNode) {
+						$processor($childNode);
+					}
+					break;
+				case 'figcaption':
+					$content .= '[figcaption]' . $node->textContent . '[/figcaption]';
+					break;
+				case 'br':
+					$content .= "\n";
+					break;
+			}
+		};
 		
-		$chapter['content'] = preg_replace('/<img\s+src="([^"]+)"\s*\/?>/', '![]($1)', $chapter['content']);
+		
+		$dom = new DomQuery($chapter['content']);
+		$dom->each($processor);
 		
 		//todo
 		
