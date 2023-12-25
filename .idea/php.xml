@@ -139,6 +139,7 @@
       <path value="$PROJECT_DIR$/vendor/friendsofhyperf/macros" />
       <path value="$PROJECT_DIR$/vendor/friendsofhyperf/helpers" />
       <path value="$PROJECT_DIR$/vendor/carbonphp/carbon-doctrine-types" />
+      <path value="$PROJECT_DIR$/vendor/rct567/dom-query" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.0" />

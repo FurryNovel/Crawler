@@ -136,6 +136,7 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/hyperf/token-bucket" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/hyperf/translation" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/malkusch/lock" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/rct567/dom-query" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
