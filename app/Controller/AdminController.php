@@ -16,7 +16,6 @@ use Hyperf\HttpServer\Annotation\AutoController;
 use Hyperf\HttpServer\Annotation\Middleware;
 
 #[AutoController]
-#[Middleware(AdminMiddleware::class)]
 class AdminController extends FS_Controller {
 	function fetch_novel(string $type, string $rule_novel_id): array {
 		$rule = FetchRule::getRule($type);

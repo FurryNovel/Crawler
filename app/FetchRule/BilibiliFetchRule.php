@@ -43,7 +43,8 @@ class BilibiliFetchRule extends FetchRule {
 		$handler = \GuzzleHttp\HandlerStack::create(new CoroutineHandler());
 		$handler->push(function (callable $handler) {
 			return function (RequestInterface $request, array $options) use ($handler) {
-				$request->withUri($request->getUri()->withQuery($this->signature->sign($request->getUri()->getQuery())));
+				parse_str($request->getUri()->getQuery(), $params);
+				$request->withUri($request->getUri()->withQuery($this->signature->sign($params)));
 				$rand_key = mt_rand(0, 9);
 				$ip = long2ip(mt_rand(self::IP_LIST[$rand_key][0], self::IP_LIST[$rand_key][1]));
 				$request = $request
@@ -73,7 +74,8 @@ class BilibiliFetchRule extends FetchRule {
 			],
 		]);
 		$response = json_decode($response->getBody()->getContents(), true);
-		$novel = $response['data']['list'];
+		$response = $response['data'];
+		$novel = $response['list'];
 		$tags = [];
 		$tags[] = 'zh';
 		return new NovelInfo(
@@ -159,8 +161,6 @@ class BilibiliFetchRule extends FetchRule {
 		
 		$dom = new DomQuery($chapter['content']);
 		$dom->each($processor);
-		
-		//todo
 		
 		return new ChapterInfo(
 			$chapter['id'],

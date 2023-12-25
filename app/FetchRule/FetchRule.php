@@ -11,6 +11,7 @@ use GuzzleHttp\Exception\GuzzleException;
 abstract class FetchRule {
 	const RULES = [
 		'pixiv' => PixivFetchRule::class,
+		'bilibili' => BilibiliFetchRule::class,
 	];
 	
 	static function getRule(string $type): ?self {
