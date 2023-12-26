@@ -115,7 +115,6 @@ class BilibiliFetchRule extends FetchRule {
 	}
 	
 	function fetchChapterContent(string $novelId, string $chapterId): ChapterInfo {
-		//手动解析
 		//https://www.bilibili.com/read/cv18272730/
 		$response = $this->getRequest()->get("https://www.bilibili.com/read/cv$chapterId", [
 			'query' => [
@@ -123,45 +122,11 @@ class BilibiliFetchRule extends FetchRule {
 			],
 		]);
 		$response = $response->getBody()->getContents();
-		//window.__INITIAL_STATE__=(\{[\S\s\r\n]+});
-		
 		$pattern = '/window.__INITIAL_STATE__=(\{[\S\s\r\n]+});/';
 		preg_match($pattern, $response, $matches);
 		$chapter = json_decode($matches[1], true);
 		$chapter = $chapter['readInfo'];
-		
-		$content = '';
-		$processor = function (DOMNode $node) use (&$content, &$processor) {
-			switch ($node->nodeName) {
-				case 'p':
-					$content .= $node->textContent;
-					break;
-				case 'img':
-					$class = $node->getAttribute('class');
-					if (str_starts_with($class, 'cut-off')) {
-						$content .= "[hr][/hr]";
-						break;
-					}
-					$content .= '[img]' . $node->getAttribute('data-src') . '[/img]';
-					break;
-				case 'figure':
-					foreach ($node->childNodes as $childNode) {
-						$processor($childNode);
-					}
-					break;
-				case 'figcaption':
-					$content .= '[figcaption]' . $node->textContent . '[/figcaption]';
-					break;
-				case 'br':
-					$content .= "\n";
-					break;
-			}
-		};
-		
-		
-		$dom = new DomQuery($chapter['content']);
-		$dom->each($processor);
-		
+		$content = $this->processContent($chapter['content']);
 		return new ChapterInfo(
 			$chapter['id'],
 			$chapter['title'] ?? '',
@@ -169,8 +134,42 @@ class BilibiliFetchRule extends FetchRule {
 			$chapter['words'] ?? 0,
 			$chapter['words'] ?? 0,
 			[],
-			$chapter['content']
+			$content
 		);
+	}
+	
+	function processContent(string $content): string {
+		$res = '';
+		$processor = function (DOMNode $node) use (&$res, &$processor) {
+			switch ($node->nodeName) {
+				case 'p':
+					$res .= "{$node->textContent}\n";
+					break;
+				case 'img':
+					$class = $node->getAttribute('class');
+					if (str_starts_with($class, 'cut-off')) {
+						$res .= "[hr][/hr]\n";
+						break;
+					}
+					$src = $node->getAttribute('data-src');
+					$res .= "[img]{$src}[/img]\n";
+					break;
+				case 'figure':
+					foreach ($node->childNodes as $childNode) {
+						$processor($childNode);
+					}
+					break;
+				case 'figcaption':
+					$res .= "[figcaption]{$node->textContent}[/figcaption]\n";
+					break;
+				case 'br':
+					$res .= "\n";
+					break;
+			}
+		};
+		$dom = new DomQuery($content);
+		$dom->each($processor);
+		return $res;
 	}
 	
 	function fetchAuthorInfo(string $authorId): AuthorInfo {

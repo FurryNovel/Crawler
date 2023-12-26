@@ -7,6 +7,7 @@ use App\Controller\Abstract\FS_Controller;
 use App\Controller\Abstract\PublicController;
 use App\DataSet\DataSet;
 use App\FetchRule\FetchRule;
+use App\Model\Chapter;
 use App\Model\Novel;
 use App\Model\Tag;
 use App\Model\User;
@@ -26,9 +27,9 @@ class IndexController extends FS_Controller {
 			'pong'
 		);
 	}
-	
-	#[Inject]
-	protected DataSet $dataSet;
+
+//	#[Inject]
+//	protected DataSet $dataSet;
 
 //	function tags() {
 //		Novel::chunk(100, function (Collection $novels) {
@@ -54,5 +55,24 @@ class IndexController extends FS_Controller {
 //				}
 //			});
 //		});
+//	}
+//
+//	function bilibili() {
+//		$rule = FetchRule::getRule('bilibili');
+//		if (!$rule) {
+//			return $this->error('规则不存在');
+//		}
+//		Novel::where('source', 'bilibili')->chunk(100, function (Collection $novels) use ($rule) {
+//			$novels->each(function (Novel $novel) use ($rule) {
+//				Chapter::where('novel_id', $novel->id)->chunk(100, function (Collection $chapters) use ($rule) {
+//					$chapters->each(function (Chapter $chapter) use ($rule) {
+//						$chapter->content = $rule->processContent($chapter->content);
+//						$chapter->save();
+//					});
+//				});
+//			});
+//		});
+//
+//		return $this->success();
 //	}
 }

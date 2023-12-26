@@ -67,6 +67,10 @@ abstract class FetchRule {
 	 * @throws GuzzleException
 	 */
 	abstract function fetchAuthorInfo(string $authorId): AuthorInfo;
+	
+	function processContent(string $content): string {
+		return $content;
+	}
 }
 
 
