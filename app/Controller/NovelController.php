@@ -85,36 +85,16 @@ class NovelController extends FS_Controller {
 	
 	#[Cacheable(prefix: __CLASS__, ttl: 300)]
 	#[RequestMapping(path: '{novel_id:\d+}/chapter[/{chapter_id:\d+}]', methods: 'get')]
-	function chapters(string $novel_id, ?string $chapter_id = null, ?string $current = null): array {
+	function chapters(string $novel_id, ?string $chapter_id = null): array {
 		if ($chapter_id) {
 			return $this->success(Chapter::findFromCache($chapter_id)->makeVisible('content'));
 		}
-		if ($current) {
-			$count = Chapter::where(function (Builder $query) use ($current, $novel_id) {
+		return $this->success(
+			Chapter::where(function (Builder $query) use ($novel_id) {
 				$query->where('novel_id', $novel_id);
-				$query->where('id', '<', $current);
 				$query->where('status', Chapter::STATUS_PUBLISH);
-			})->count('id');
-			$page = (int)ceil($count / 15);
-			return $this->success(
-				Chapter::where(function (Builder $query) use ($current, $novel_id) {
-					$query->where('novel_id', $novel_id);
-					$query->where('status', Chapter::STATUS_PUBLISH);
-				})->paginate(
-					null,
-					['id', 'name', 'tags', 'text_count', 'word_count', 'created_at', 'updated_at'],
-					'page',
-					$page
-				)
-			);
-		} else {
-			return $this->success(
-				Chapter::where(function (Builder $query) use ($novel_id) {
-					$query->where('novel_id', $novel_id);
-					$query->where('status', Chapter::STATUS_PUBLISH);
-				})->paginate(null, ['id', 'name', 'tags', 'text_count', 'word_count', 'created_at', 'updated_at'])
-			);
-		}
+			})->get(['id', 'name', 'tags', 'text_count', 'word_count', 'created_at', 'updated_at'])
+		);
 	}
 	
 }
