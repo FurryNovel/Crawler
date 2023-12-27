@@ -78,10 +78,10 @@ class MediaService {
 			$imagick->readImageBlob($image);
 			$imagick->setImageFormat('png');
 			$imagick->setImageCompression(Imagick::COMPRESSION_JPEG);
-			$imagick->setImageCompressionQuality(50);
+			$imagick->setImageCompressionQuality(70);
 			$imagick->stripImage();
-			if ($imagick->getImageHeight() > 450 and $imagick->getImageWidth() > 320) {
-				$imagick->resizeImage(320, 450, Imagick::FILTER_LANCZOS, 1);
+			if ($imagick->getImageHeight() > 225 and $imagick->getImageWidth() > 160) {
+				$imagick->resizeImage(160, 225, Imagick::FILTER_LANCZOS, 1);
 			}
 			$this->getSystem()->write($path, $imagick->getImageBlob());
 			return true;
