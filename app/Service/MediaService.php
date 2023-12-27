@@ -36,7 +36,8 @@ class MediaService {
 	}
 	
 	function getUri($origin_url): string {
-		$url = '/media/image';
+		$root = \Hyperf\Support\env('API_ROOT');
+		$url = $root . '/media/image';
 		return $url . '?' . http_build_query([
 				'url' => $origin_url,
 				'sign' => $this->sign($origin_url),
@@ -67,16 +68,12 @@ class MediaService {
 			],
 		]);
 		$res = $client->get($url, [
-			'stream' => true,
 			'verify' => false,
 		]);
-		$stream = $res->getBody();
 		try {
-			$this->getSystem()->writeStream($path, StreamWrapper::getResource($stream));
+			$this->getSystem()->write($path, $res->getBody()->getContents());
 			return true;
 		} catch (\Throwable $exception) {
-			//@todo
-			//throw $exception->getPrevious();
 			return false;
 		}
 	}
