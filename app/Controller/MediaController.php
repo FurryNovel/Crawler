@@ -24,11 +24,19 @@ class MediaController extends FS_Controller {
 	protected MediaService $media;
 	
 	#[Cacheable(prefix: __CLASS__, ttl: 604800)]
-	function image($url, $sign) {
+	function checkCache(string $url): array {
+		$is_success = $this->media->save($url);
+		return [
+			'result' => $is_success,
+		];
+	}
+	
+	
+	function image(string $url, string $sign) {
 		if (!$this->media->checkSign($sign, $url)) {
 			return $this->response->json($this->error('签名错误', 403));
 		}
-		$is_success = $this->media->save($url);
+		$is_success = $this->checkCache($url);
 		if ($is_success) {
 			$path = $this->media->getDriverUri($url);
 			return $this->response
