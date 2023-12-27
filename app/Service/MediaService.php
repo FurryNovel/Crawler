@@ -37,7 +37,7 @@ class MediaService {
 	
 	function getUri($origin_url): string {
 		$root = \Hyperf\Support\env('API_ROOT');
-		$url = $root . '/media/image';
+		$url = "{$root}/media/image";
 		return $url . '?' . http_build_query([
 				'url' => $origin_url,
 				'sign' => $this->sign($origin_url),
