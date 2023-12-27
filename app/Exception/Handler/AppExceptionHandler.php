@@ -30,7 +30,7 @@ class AppExceptionHandler extends ExceptionHandler {
 		if ($throwable instanceof \InvalidArgumentException) {
 			$_t = explode('\'', $throwable->getMessage());
 			$throwable = new \InvalidArgumentException(
-				'参数缺失: ' . $_t[1] ?? $throwable->getMessage(),
+				'参数缺失: ' . ($_t[1] ?? $throwable->getMessage()),
 				$throwable->getCode(),
 				$throwable
 			);
