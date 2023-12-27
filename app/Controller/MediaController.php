@@ -11,6 +11,7 @@ use App\Model\Novel;
 use App\Model\Tag;
 use App\Model\User;
 use App\Service\MediaService;
+use Hyperf\Cache\Annotation\Cacheable;
 use Hyperf\Database\Model\Collection;
 use Hyperf\Database\Query\Builder;
 use Hyperf\Di\Annotation\Inject;
@@ -22,6 +23,7 @@ class MediaController extends FS_Controller {
 	#[Inject]
 	protected MediaService $media;
 	
+	#[Cacheable(prefix: __CLASS__, ttl: 604800)]
 	function image($url, $sign) {
 		if (!$this->media->checkSign($sign, $url)) {
 			return $this->response->json($this->error('签名错误', 403));
