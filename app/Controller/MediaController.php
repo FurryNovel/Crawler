@@ -19,8 +19,7 @@ use Qbhy\HyperfAuth\AuthManager;
 
 #[AutoController]
 class MediaController extends FS_Controller {
-	
-	#[Inject(lazy: true)]
+	#[Inject]
 	protected MediaService $media;
 	
 	function image($url, $sign) {
@@ -30,7 +29,10 @@ class MediaController extends FS_Controller {
 		$is_success = $this->media->save($url);
 		if ($is_success) {
 			$path = $this->media->getDriverUri($url);
-			return $this->response->redirect($path, 302)->withAddedHeader('Cache-Control', 'max-age=31536000');
+			return $this->response
+				->redirect($path, 302)
+				->withHeader('Cache-Control', 'public, max-age=604800')
+				->withHeader('Expires', gmdate('D, d M Y H:i:s T', strtotime('+7d')));
 		}
 		return $this->response->json($this->error('签名错误', 404))->withStatus(404);
 	}
