@@ -136,6 +136,14 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/hyperf/token-bucket" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/hyperf/translation" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/malkusch/lock" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/aws/aws-crt-php" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/aws/aws-sdk-php" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/hyperf/filesystem" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/league/flysystem" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/league/flysystem-aws-s3-v3" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/league/flysystem-local" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/league/mime-type-detection" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/mtdowling/jmespath.php" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/rct567/dom-query" />
     </content>
     <orderEntry type="inheritedJdk" />

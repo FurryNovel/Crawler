@@ -7,6 +7,7 @@ use App\FetchRule\FetchRule;
 use App\FetchRule\NovelInfo;
 use App\Model\Model;
 use App\Service\FetchQueueService;
+use App\Service\MediaService;
 use App\Utils\Utils;
 use Carbon\Carbon;
 use Hyperf\Database\Model\Builder;
@@ -38,6 +39,8 @@ use Hyperf\Di\Annotation\Inject;
 class Novel extends Model {
 	#[Inject]
 	protected DataSet $dataSet;
+	#[Inject(lazy: true)]
+	protected MediaService $media;
 	
 	const STATUS_PENDING = 'pending';
 	const STATUS_PUBLISH = 'publish';
@@ -86,16 +89,17 @@ class Novel extends Model {
 	}
 	
 	function getCoverAttribute($value): string {
-		return str_replace(
+		$value = str_replace(
 			[
 				'i.pximg.net'
 			],
 			[
-				//'i.pixiv.re',
-				'img.tigerkk.me'
+				'i.pixiv.re',
+//				'img.tigerkk.me'
 			],
 			$value
 		);
+		return $this->media->getUri($value);
 	}
 	
 	function touchField($field = 'fetched_at', $value = null): bool {

@@ -13,6 +13,7 @@
   "license": "Apache-2.0",
   "require": {
 	"php": ">=8.0",
+	"ext-dom": "*",
 	"ext-iconv": "*",
 	"96qbhy/hyperf-auth": "^3.0",
 	"friendsofhyperf/helpers": "^3.0",
@@ -26,6 +27,7 @@
 	"hyperf/database": "~3.0.0",
 	"hyperf/db-connection": "~3.0.0",
 	"hyperf/engine": "^2.10",
+	"hyperf/filesystem": "3.0",
 	"hyperf/framework": "~3.0.0",
 	"hyperf/guzzle": "~3.0.0",
 	"hyperf/http-server": "~3.0.0",
@@ -37,9 +39,8 @@
 	"hyperf/rate-limit": "^3.0",
 	"hyperf/redis": "~3.0.0",
 	"hyperf/translation": "3.0.42",
-	"rct567/dom-query": "^1.0",
-	"ext-dom": "*",
-	"ext-http": "*"
+	"league/flysystem-aws-s3-v3": "3.0",
+	"rct567/dom-query": "^1.0"
   },
   "require-dev": {
 	"friendsofphp/php-cs-fixer": "^3.0",
