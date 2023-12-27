@@ -3,9 +3,11 @@
 namespace App\Service;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Stream;
 use GuzzleHttp\Psr7\StreamWrapper;
 use GuzzleHttp\Psr7\Utils;
 use Hyperf\Di\Annotation\Inject;
+use Imagick;
 use League\Flysystem\Filesystem;
 
 class MediaService {
@@ -71,7 +73,17 @@ class MediaService {
 			'verify' => false,
 		]);
 		try {
-			$this->getSystem()->write($path, $res->getBody()->getContents());
+			$image = $res->getBody()->getContents();
+			$imagick = new Imagick();
+			$imagick->readImageBlob($image);
+			$imagick->setImageFormat('png');
+			$imagick->setImageCompression(Imagick::COMPRESSION_JPEG);
+			$imagick->setImageCompressionQuality(50);
+			$imagick->stripImage();
+			if ($imagick->getImageHeight() > 450 and $imagick->getImageWidth() > 320) {
+				$imagick->resizeImage(320, 450, Imagick::FILTER_LANCZOS, 1);
+			}
+			$this->getSystem()->write($path, $imagick->getImageBlob());
 			return true;
 		} catch (\Throwable $exception) {
 			return false;
