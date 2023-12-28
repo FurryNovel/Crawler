@@ -34,12 +34,13 @@ class MediaService {
 	function getDriverUri($url): string {
 		$path = $this->getKey($url);
 		$domain = \Hyperf\Support\env('IMAGE_DOMAIN');
-		return $domain . '/' . $path;
+		return '//' . $domain . '/' . $path;
 	}
 	
 	function getUri($origin_url): string {
-		$root = \Hyperf\Support\env('API_ROOT');
-		$url = "{$root}/media/image";
+		$root = \Hyperf\Support\env('APP_DOMAIN');
+		$root .= \Hyperf\Support\env('API_ROOT');
+		$url = "//{$root}/media/image";
 		return $url . '?' . http_build_query([
 				'url' => $origin_url,
 				'sign' => $this->sign($origin_url),
