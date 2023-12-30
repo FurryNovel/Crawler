@@ -17,6 +17,7 @@ class NovelController extends FS_Controller {
 	protected function baseQuery(): Builder {
 		$query = Novel::where('novel.status', Novel::STATUS_PUBLISH);
 		
+		$ids = $this->request->input('ids');
 		$tag = $this->request->input('tag');
 		$keyword = $this->request->input('keyword');
 		$user_id = intval($this->request->input('user_id'));
@@ -50,6 +51,9 @@ class NovelController extends FS_Controller {
 		if ($user_id) {
 			$query->where('novel.author_id', $user_id);
 		}
+		if ($ids) {
+			$query->whereIn('novel.id', array_map('intval', $ids));
+		}
 		
 		switch ($order_by) {
 			case 'latest':
@@ -69,8 +73,12 @@ class NovelController extends FS_Controller {
 	}
 	
 	#[RequestMapping(path: '', methods: 'get')]
-	function index(): array {
-		return $this->success($this->baseQuery()->paginate(), '获取成功');
+	function index(bool $with_chapters = false): array {
+		$query = $this->baseQuery();
+		if ($with_chapters) {
+			$query = $query->with(['latestChapters']);
+		}
+		return $this->success($query->paginate(), '获取成功');
 	}
 	
 	#[RequestMapping(path: '{novel_id:\d+}', methods: 'get')]
