@@ -94,6 +94,9 @@ class BilibiliFetchRule extends FetchRule {
 	
 	function fetchChapterList(string $novelId, string $page = '1'): array {
 		//https://api.bilibili.com/x/article/list/web/articles?id=605518
+		if ($page != '1') {
+			return [];
+		}
 		$response = $this->getRequest()->get('/x/article/list/web/articles', [
 			'query' => [
 				'id' => $novelId,
