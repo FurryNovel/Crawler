@@ -167,7 +167,8 @@ class BilibiliFetchRule extends FetchRule {
 					break;
 			}
 		};
-		$dom = new DomQuery($content);
+		$dom = new DomQuery();
+		$dom->loadContent($content);
 		$dom->each($processor);
 		return $res;
 	}
