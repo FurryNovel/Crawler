@@ -50,6 +50,21 @@ class PixivFetchRule extends FetchRule {
 					if (isset($novel['language'])) {
 						$tags[] = $novel['language'];
 					}
+					if (isset($novel['xRestrict'])) {
+						switch ($novel['xRestrict']) {
+							case 0:
+								$tags[] = 'SFW';
+								break;
+							case 1:
+								$tags[] = 'NSFW';
+								$tags[] = 'R-18';
+								break;
+							case 2:
+								$tags[] = 'NSFW';
+								$tags[] = 'R-18G';
+								break;
+						}
+					}
 					$oneshot = $novel['isOneshot'] ?? false;
 					if (!$oneshot) {
 						return new NovelInfo(
@@ -101,6 +116,21 @@ class PixivFetchRule extends FetchRule {
 			}
 			if ($novel['language']) {
 				$tags[] = $novel['language'];
+			}
+			if (isset($novel['xRestrict'])) {
+				switch ($novel['xRestrict']) {
+					case 0:
+						$tags[] = 'SFW';
+						break;
+					case 1:
+						$tags[] = 'NSFW';
+						$tags[] = 'R-18';
+						break;
+					case 2:
+						$tags[] = 'NSFW';
+						$tags[] = 'R-18G';
+						break;
+				}
 			}
 			$oneshot = $novel['isOneshot'] ?? false;
 			if (!$oneshot) {

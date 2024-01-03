@@ -57,6 +57,7 @@ class BilibiliFetchRule extends FetchRule {
 			$novel = $response['list'];
 			$tags = [];
 			$tags[] = 'zh';
+			$tags[] = 'SFW';
 			return new NovelInfo(
 				$novel['id'],
 				$novel['name'],
