@@ -21,6 +21,7 @@ class FetchLatestNovelTask {
 		'furry',
 		'兽人',
 		'獣人',
+//		'ケモノ',
 		'transfur',
 		'TF',
 		'龙',
