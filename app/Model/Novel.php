@@ -178,6 +178,14 @@ class Novel extends Model {
 		return $novel;
 	}
 	
+	function updateFromFetchInfo(NovelInfo $novelInfo): bool {
+		$this->name = $novelInfo->name;
+		$this->cover = $novelInfo->cover;
+		$this->desc = $novelInfo->desc;
+		$this->tags = $novelInfo->tags;
+		return $this->save();
+	}
+	
 	public function created(Created $event): void {
 		try {
 			$tags = json_decode($this->attributes['tags'] ?? '[]', true);

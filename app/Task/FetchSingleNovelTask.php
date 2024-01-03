@@ -32,6 +32,13 @@ class FetchSingleNovelTask extends Job {
 			return;
 		}
 		
+		$original = $rule->fetchNovelDetail($novel->source_id);
+		if (!$original) {
+			$novel->touchField('sync_status', 2);
+			return;
+		}
+		$novel->updateFromFetchInfo($original);
+		
 		if (!$novel->isOneShot()) {
 			$page = 0;
 			do {

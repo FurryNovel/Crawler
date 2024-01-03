@@ -21,7 +21,6 @@ class FetchLatestNovelTask {
 		'furry',
 		'兽人',
 		'獣人',
-		'ケモノ',
 		'transfur',
 		'TF',
 		'龙',
@@ -40,7 +39,7 @@ class FetchLatestNovelTask {
 				$max_page = PHP_INT_MAX;
 				$last_id = $cache->get(sprintf('fetch_latest_%s_%s', $rule->getType(), $tag), null);
 				if (!$last_id) {
-					$max_page = 15;
+					$max_page = 5;
 				}
 				$is_first = true;
 				while ($page < $max_page) {
