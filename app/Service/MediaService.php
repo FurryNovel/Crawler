@@ -34,7 +34,7 @@ class MediaService {
 	function getDriverUri($url): string {
 		$path = $this->getKey($url);
 		$domain = \Hyperf\Support\env('IMAGE_DOMAIN');
-		return $domain . '/' . $path;
+		return "https://{$domain}/{$path}";
 	}
 	
 	function getUri($origin_url): string {
