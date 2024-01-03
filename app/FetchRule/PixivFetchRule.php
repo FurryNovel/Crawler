@@ -26,7 +26,7 @@ class PixivFetchRule extends FetchRule {
 	}
 	
 	function fetchNovelList(string $tag = 'furry', string $page = '1'): array {
-		//https://www.pixiv.net/ajax/search/novels/%E3%82%B1%E3%83%A2%E3%83%9B%E3%83%A2?word=%E3%82%B1%E3%83%A2%E3%83%9B%E3%83%A2&order=date_d&mode=all&p=1&s_mode=s_tag_full&work_lang=zh-cn&gs=1&lang=zh&version=42055d64ddbad5c0a69639e157b82e921bf63b31
+		//https://www.pixiv.net/ajax/search/novels/%E3%82%B1%E3%83%A2%E3%83%9B%E3%83%A2?word=%E3%82%B1%E3%83%A2%E3%83%9B%E3%83%A2&order=date_d&mode=all&p=1&s_mode=s_tag_full&gs=1&lang=zh&version=42055d64ddbad5c0a69639e157b82e921bf63b31
 		return $this->getRequest()
 			->getAsync('/ajax/search/novels/' . $tag, [
 				'query' => [
@@ -34,7 +34,6 @@ class PixivFetchRule extends FetchRule {
 					'order' => 'date_d',
 					'mode' => 'all',
 					's_mode' => 's_tag_full',
-					'work_lang' => 'zh-cn',
 					'gs' => 1,
 					'lang' => 'zh',
 					'version' => '42055d64ddbad5c0a69639e157b82e921bf63b31',

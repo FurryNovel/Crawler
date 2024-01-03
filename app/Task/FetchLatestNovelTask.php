@@ -20,11 +20,15 @@ class FetchLatestNovelTask {
 	const TAGS = [
 		'furry',
 		'兽人',
+		'獣人',
 		'ケモノ',
-		'gay',
-		'同性恋',
 		'transfur',
 		'TF',
+		'龙',
+		'龍',
+		'虎',
+		'狼',
+		'狐',
 	];
 	
 	public function execute(): void {
