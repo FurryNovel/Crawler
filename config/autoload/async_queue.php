@@ -10,7 +10,7 @@ return [
 		'timeout' => 2,
 		'retry_seconds' => 5,
 		'handle_timeout' => 300,
-		'processes' => 3,
+		'processes' => 2,
 		'concurrent' => [
 			'limit' => 1,
 		],
