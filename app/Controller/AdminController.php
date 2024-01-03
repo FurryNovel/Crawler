@@ -26,6 +26,9 @@ class AdminController extends FS_Controller {
 		$rule_novel_id = trim($rule_novel_id);
 		
 		$novelInfo = $rule->fetchNovelDetail($rule_novel_id);
+		if (!$novelInfo) {
+			return $this->error('小说不存在');
+		}
 		$novel = Novel::fromFetchRule($rule, $novelInfo);
 		return $this->success($novel,
 			'请求成功，请耐心等候系统处理'

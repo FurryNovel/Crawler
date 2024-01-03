@@ -126,12 +126,21 @@ class Novel extends Model {
 		})->first();
 		if (!$author) {
 			$authorInfo = $rule->fetchAuthorInfo($novelInfo->author_id);
-			$author = Author::register(
-				User::TYPE_AUTHOR,
-				$authorInfo->name,
-				base64_encode('kk_novel_' . $authorInfo->name),
-				[]
-			);
+			if (!$authorInfo) {
+				$author = Author::register(
+					User::TYPE_AUTHOR,
+					$novelInfo->author,
+					base64_encode('kk_novel_' . $novelInfo->author),
+					[]
+				);
+			} else {
+				$author = Author::register(
+					User::TYPE_AUTHOR,
+					$authorInfo->name,
+					base64_encode('kk_novel_' . $authorInfo->name),
+					[]
+				);
+			}
 		}
 		/**
 		 * @var Novel $novel

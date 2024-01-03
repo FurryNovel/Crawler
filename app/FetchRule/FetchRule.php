@@ -5,6 +5,8 @@ namespace App\FetchRule;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use Hyperf\Guzzle\CoroutineHandler;
+use Psr\Http\Message\RequestInterface;
 
 /**
  */
@@ -14,12 +16,44 @@ abstract class FetchRule {
 		'bilibili' => BilibiliFetchRule::class,
 	];
 	
+	const IP_LIST = [
+		['607649792', '608174079'], //36.56.0.0-36.63.255.255
+		['1038614528', '1039007743'], //61.232.0.0-61.237.255.255
+		['1783627776', '1784676351'], //106.80.0.0-106.95.255.255
+		['2035023872', '2035154943'], //121.76.0.0-121.77.255.255
+		['2078801920', '2079064063'], //123.232.0.0-123.235.255.255
+		['-1950089216', '-1948778497'], //139.196.0.0-139.215.255.255
+		['-1425539072', '-1425014785'], //171.8.0.0-171.15.255.255
+		['-1236271104', '-1235419137'], //182.80.0.0-182.92.255.255
+		['-770113536', '-768606209'], //210.25.0.0-210.47.255.255
+		['-569376768', '-564133889'], //222.16.0.0-222.95.255.255
+	];
+	
 	static function getRule(string $type): ?self {
 		if (!isset(self::RULES[$type])) {
 			return null;
 		}
 		return new (self::RULES[$type])();
 	}
+	
+	
+	function getRequestHandler() {
+		$handler = \GuzzleHttp\HandlerStack::create(new CoroutineHandler());
+		$handler->push(function (callable $handler) {
+			return function (RequestInterface $request, array $options) use ($handler) {
+				$rand_key = mt_rand(0, count(self::IP_LIST) - 1);
+				$ip = long2ip(mt_rand(self::IP_LIST[$rand_key][0], self::IP_LIST[$rand_key][1]));
+				$request = $request
+					->withAddedHeader('X-Forwarded-For', $ip)
+					->withAddedHeader('Client-IP', $ip)
+					->withAddedHeader('X-Real-IP', $ip)
+					->withAddedHeader('X-Client-IP', $ip);
+				return $handler($request, $options);
+			};
+		}, 'fake_ip');
+		return $handler;
+	}
+	
 	
 	abstract static function getType(): string;
 	
@@ -42,7 +76,7 @@ abstract class FetchRule {
 	 * @return NovelInfo
 	 * @throws GuzzleException
 	 */
-	abstract function fetchNovelDetail(string $novelId): NovelInfo;
+	abstract function fetchNovelDetail(string $novelId): ?NovelInfo;
 	
 	/**
 	 * 获取章节列表
@@ -58,7 +92,7 @@ abstract class FetchRule {
 	 * @param string $chapterId
 	 * @return string
 	 */
-	abstract function fetchChapterContent(string $novelId, string $chapterId): ChapterInfo;
+	abstract function fetchChapterContent(string $novelId, string $chapterId): ?ChapterInfo;
 	
 	/**
 	 * 获取作者信息
@@ -66,7 +100,7 @@ abstract class FetchRule {
 	 * @return AuthorInfo
 	 * @throws GuzzleException
 	 */
-	abstract function fetchAuthorInfo(string $authorId): AuthorInfo;
+	abstract function fetchAuthorInfo(string $authorId): ?AuthorInfo;
 	
 	function processContent(string $content): string {
 		return $content;
