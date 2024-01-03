@@ -179,10 +179,10 @@ class Novel extends Model {
 	}
 	
 	function updateFromFetchInfo(NovelInfo $novelInfo): bool {
-		$this->name = $novelInfo->name;
-		$this->cover = $novelInfo->cover;
-		$this->desc = $novelInfo->desc;
-		$this->tags = $novelInfo->tags;
+		$this->touchField('name', $novelInfo->name);
+		$this->touchField('cover', $novelInfo->cover);
+		$this->touchField('desc', $novelInfo->desc);
+		$this->touchField('tags', $novelInfo->tags);
 		return $this->save();
 	}
 	

@@ -19,6 +19,7 @@ class NovelController extends FS_Controller {
 		
 		$ids = $this->request->input('ids');
 		$tag = $this->request->input('tag');
+		$hate_tags = $this->request->input('hate_tags');
 		$keyword = $this->request->input('keyword');
 		$user_id = intval($this->request->input('user_id'));
 		$order_by = $this->request->input('order_by', 'latest');
@@ -46,13 +47,34 @@ class NovelController extends FS_Controller {
 			});
 		}
 		if ($keyword) {
-			$query->where('novel.name', 'like', '%' . $keyword . '%');
+			$query->where(function (Builder $query) use ($keyword) {
+				$query->where('novel.name', 'like', '%' . $keyword . '%', 'OR');
+				$query->where('novel.desc', 'like', '%' . $keyword . '%', 'OR');
+				$query->whereIn('novel.author_id', function (Builder $query) use ($keyword) {
+					$query->select('id')
+						->from('user')
+						->where('user.nickname', 'like', '%' . $keyword . '%');
+				}, 'OR');
+			});
 		}
 		if ($user_id) {
 			$query->where('novel.author_id', $user_id);
 		}
 		if ($ids) {
 			$query->whereIn('novel.id', array_map('intval', $ids));
+		}
+		if ($hate_tags) {
+			$hate_tags = array_values(array_filter(array_map(function ($tag) {
+				return trim(str_replace(['%', '\\'], '', $tag));
+			}, $hate_tags), function ($tag) {
+				return !empty($tag);
+			}));
+			$hate_tags = array_values(array_slice($hate_tags, 0, 5));
+			if (!empty($hate_tags)) {
+				foreach ($hate_tags as $tag) {
+					$query->where('novel.tags', 'not like', '%' . $tag . '%', 'OR');
+				}
+			}
 		}
 		
 		switch ($order_by) {

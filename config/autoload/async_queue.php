@@ -9,10 +9,10 @@ return [
 		'channel' => 'queue',
 		'timeout' => 2,
 		'retry_seconds' => 5,
-		'handle_timeout' => 300,
+		'handle_timeout' => 600,
 		'processes' => 2,
 		'concurrent' => [
-			'limit' => 1,
+			'limit' => 2,
 		],
 	],
 ];
