@@ -21,6 +21,10 @@ class FetchLatestNovelTask {
 		'furry',
 		'兽人',
 		'ケモノ',
+		'gay',
+		'同性恋',
+		'transfur',
+		'TF',
 	];
 	
 	public function execute(): void {
