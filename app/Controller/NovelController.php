@@ -80,7 +80,6 @@ class NovelController extends FS_Controller {
 			);
 			if (!empty($hate_tags)) {
 				foreach ($hate_tags as $tag) {
-					$tag = [0] ?? '';
 					$query->where('novel.tags', 'not like', '%' . $tag . '%', 'OR');
 				}
 			}
