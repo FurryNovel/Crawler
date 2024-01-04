@@ -34,4 +34,8 @@ class Utils {
 			return 'zh_CN';
 		}
 	}
+	
+	static public function filterLike(string $str): string {
+		return str_replace(['%', '\\'], '', $str);
+	}
 }

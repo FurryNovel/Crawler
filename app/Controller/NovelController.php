@@ -6,6 +6,7 @@ namespace App\Controller;
 use App\Controller\Abstract\FS_Controller;
 use App\Model\Chapter;
 use App\Model\Novel;
+use App\Utils\Utils;
 use Hyperf\Cache\Annotation\Cacheable;
 use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Query\JoinClause;
@@ -18,9 +19,9 @@ class NovelController extends FS_Controller {
 		$query = Novel::where('novel.status', Novel::STATUS_PUBLISH);
 		
 		$ids = $this->request->input('ids');
-		$tag = $this->request->input('tag');
-		$hate_tags = $this->request->input('hate_tags');
-		$keyword = $this->request->input('keyword');
+		$tag = Utils::filterLike($this->request->input('tag'));
+		$hate_tags = array_values(array_filter($this->request->input('hate_tags', []), 'Utils::filterLike'));
+		$keyword = Utils::filterLike($this->request->input('keyword'));
 		$user_id = intval($this->request->input('user_id'));
 		$order_by = $this->request->input('order_by', 'latest');
 		$order = $this->request->input('order', 'desc');
@@ -35,7 +36,7 @@ class NovelController extends FS_Controller {
 				break;
 		}
 		
-		if ($tag) {
+		if (!empty($tag)) {
 			$query->where(function (Builder $query) use ($tag) {
 				$query->where('novel.tags', 'like', '%' . $tag . '%');
 				$query->whereIn('novel.id', function (\Hyperf\Database\Query\Builder $query) use ($tag) {
@@ -46,7 +47,7 @@ class NovelController extends FS_Controller {
 				}, 'OR');
 			});
 		}
-		if ($keyword) {
+		if (!empty($keyword)) {
 			$query->where(function (Builder $query) use ($keyword) {
 				$query->where('novel.name', 'like', '%' . $keyword . '%', 'OR');
 				$query->where('novel.desc', 'like', '%' . $keyword . '%', 'OR');
@@ -63,12 +64,7 @@ class NovelController extends FS_Controller {
 		if ($ids) {
 			$query->whereIn('novel.id', array_map('intval', $ids));
 		}
-		if ($hate_tags) {
-			$hate_tags = array_values(array_filter(array_map(function ($tag) {
-				return trim(str_replace(['%', '\\'], '', $tag));
-			}, $hate_tags), function ($tag) {
-				return !empty($tag);
-			}));
+		if (!empty($hate_tags)) {
 			$hate_tags = array_values(array_slice($hate_tags, 0, 5));
 			if (!empty($hate_tags)) {
 				foreach ($hate_tags as $tag) {
