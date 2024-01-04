@@ -35,7 +35,9 @@ class Utils {
 		}
 	}
 	
-	static public function filterLike(string $str): string {
-		return str_replace(['%', '\\'], '', $str);
+	static public function filterLike(?string $str): ?string {
+		if ($str)
+			return str_replace(['%', '\\'], '', $str);
+		return null;
 	}
 }
