@@ -71,10 +71,16 @@ class NovelController extends FS_Controller {
 			$query->whereIn('novel.id', array_map('intval', $ids));
 		}
 		if (!empty($hate_tags)) {
-			$hate_tags = array_values(array_slice($hate_tags, 0, 5));
+			$hate_tags = array_values(
+				array_slice(
+					$this->dataSet->convertToPattern(null, $hate_tags),
+					0,
+					10
+				)
+			);
 			if (!empty($hate_tags)) {
 				foreach ($hate_tags as $tag) {
-					$tag = $this->dataSet->convertToPattern(null, [$tag])[0] ?? '';
+					$tag = [0] ?? '';
 					$query->where('novel.tags', 'not like', '%' . $tag . '%', 'OR');
 				}
 			}
