@@ -4,17 +4,22 @@ declare(strict_types = 1);
 namespace App\Controller;
 
 use App\Controller\Abstract\FS_Controller;
+use App\DataSet\DataSet;
 use App\Model\Chapter;
 use App\Model\Novel;
 use App\Utils\Utils;
 use Hyperf\Cache\Annotation\Cacheable;
 use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Query\JoinClause;
+use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\RequestMapping;
 
 #[Controller]
 class NovelController extends FS_Controller {
+	#[Inject]
+	protected DataSet $dataSet;
+	
 	protected function baseQuery(): Builder {
 		$query = Novel::where('novel.status', Novel::STATUS_PUBLISH);
 		
@@ -38,6 +43,7 @@ class NovelController extends FS_Controller {
 		
 		if (!empty($tag)) {
 			$query->where(function (Builder $query) use ($tag) {
+				$tag = $this->dataSet->convertToPattern(null, [$tag])[0] ?? '';
 				$query->where('novel.tags', 'like', '%' . $tag . '%');
 				$query->whereIn('novel.id', function (\Hyperf\Database\Query\Builder $query) use ($tag) {
 					$query->select('novel_id')
@@ -68,6 +74,7 @@ class NovelController extends FS_Controller {
 			$hate_tags = array_values(array_slice($hate_tags, 0, 5));
 			if (!empty($hate_tags)) {
 				foreach ($hate_tags as $tag) {
+					$tag = $this->dataSet->convertToPattern(null, [$tag])[0] ?? '';
 					$query->where('novel.tags', 'not like', '%' . $tag . '%', 'OR');
 				}
 			}
