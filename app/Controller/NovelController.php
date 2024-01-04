@@ -20,7 +20,7 @@ class NovelController extends FS_Controller {
 		
 		$ids = $this->request->input('ids');
 		$tag = Utils::filterLike($this->request->input('tag'));
-		$hate_tags = array_values(array_filter($this->request->input('hate_tags', []), 'Utils::filterLike'));
+		$hate_tags = array_values(array_filter($this->request->input('hate_tags', []), 'App\Utils\Utils::filterLike'));
 		$keyword = Utils::filterLike($this->request->input('keyword'));
 		$user_id = intval($this->request->input('user_id'));
 		$order_by = $this->request->input('order_by', 'latest');
