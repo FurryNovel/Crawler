@@ -8,7 +8,7 @@ class LanguageService {
 	protected LanguageDetector $detector;
 	
 	public function __construct() {
-		$this->detector = new LanguageDetector(null, ['zh-cn', 'zh-tw', 'en', 'ja']);
+		$this->detector = new LanguageDetector(null, ['zh-cn', 'zh-tw', 'en', 'ja', 'ko']);
 	}
 	
 	function detect(string $text): string {
