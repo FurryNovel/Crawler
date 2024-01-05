@@ -38,7 +38,7 @@ class LanguageService {
 		// 检查是否包含中文
 		if (preg_match_all('/[\x{4E00}-\x{9FBF}]/u', $text) >= $check) {
 			//检查是否包含繁体中文
-			return $this->detectDeep($text, ['zh-cn' => 2, 'zh-tw' => 2.5]);
+			return $this->detectDeep($text, ['zh-cn' => 2, 'zh-tw' => 2]);
 		}
 		return $this->detectDeep($text);
 	}
