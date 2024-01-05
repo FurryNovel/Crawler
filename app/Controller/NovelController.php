@@ -78,7 +78,7 @@ class NovelController extends FS_Controller {
 			$query->where(function (Builder $query) use ($keyword) {
 				$query->where('novel.name', 'like', '%' . $keyword . '%', 'OR');
 				$query->where('novel.desc', 'like', '%' . $keyword . '%', 'OR');
-				$query->whereIn('novel.author_id', function (Builder $query) use ($keyword) {
+				$query->whereIn('novel.author_id', function (\Hyperf\Database\Query\Builder $query) use ($keyword) {
 					$query->select('id')
 						->from('user')
 						->where('user.nickname', 'like', '%' . $keyword . '%');
