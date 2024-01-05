@@ -62,7 +62,7 @@ class AdminController extends FS_Controller {
 			$novels->each(function (Novel $novel) {
 				$novel->doBackground(function () use ($novel) {
 					$tags = $novel->tags;
-					$text = $novel->name . $novel->desc . $novel->author->nickname;
+					$text = $novel->name . $novel->desc . implode('', $tags);
 					if (!empty($text)) {
 						$language = $this->language->detect($text);
 						$language = str_replace('-', '_', $language);

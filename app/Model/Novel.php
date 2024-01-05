@@ -175,7 +175,7 @@ class Novel extends Model {
 			$this->cover = $novelInfo->cover;
 			$this->desc = $novelInfo->desc;
 			$tags = $novelInfo->tags;
-			$text = $this->name . $this->desc . $this->author->nickname;
+			$text = $this->name . $this->desc . implode('', $tags);
 			if (!empty($text)) {
 				$language = $this->language->detect($text);
 				$language = str_replace('-', '_', $language);
