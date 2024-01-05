@@ -102,18 +102,6 @@ class Novel extends Model {
 		return $this->media->getUri($value);
 	}
 	
-	function touchField($field = 'fetched_at', $value = null): bool {
-		$this->timestamps = false;
-		if ($this->{$field} instanceof Carbon) {
-			$this->{$field} = Carbon::now();
-		} else {
-			$this->{$field} = $value;
-		}
-		$bool = $this->save();
-		$this->timestamps = true;
-		return $bool;
-	}
-	
 	function isOneShot(): bool {
 		$ext_data = $this->ext_data;
 		return $ext_data['oneshot'] ?? false;
@@ -179,11 +167,13 @@ class Novel extends Model {
 	}
 	
 	function updateFromFetchInfo(NovelInfo $novelInfo): bool {
-		$this->touchField('name', $novelInfo->name);
-		$this->touchField('cover', $novelInfo->cover);
-		$this->touchField('desc', $novelInfo->desc);
-		$this->touchField('tags', $novelInfo->tags);
-		return $this->save();
+		$this->doBackground(function () use ($novelInfo) {
+			$this->name = $novelInfo->name;
+			$this->cover = $novelInfo->cover;
+			$this->desc = $novelInfo->desc;
+			$this->tags = $novelInfo->tags;
+		});
+		return true;
 	}
 	
 	public function created(Created $event): void {

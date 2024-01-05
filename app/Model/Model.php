@@ -13,6 +13,7 @@ declare(strict_types = 1);
 namespace App\Model;
 
 use App\Model\Scope\AuthorScope;
+use Carbon\Carbon;
 use Hyperf\Context\ApplicationContext;
 use Hyperf\Database\Model\Collection;
 use Hyperf\DbConnection\Model\Model as BaseModel;
@@ -36,6 +37,32 @@ abstract class Model extends BaseModel implements CacheableInterface {
 	
 	protected function asJson(mixed $value): string|false {
 		return json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+	}
+	
+	/**
+	 * 不会触发更新时间
+	 */
+	function doBackground(callable $callback): bool {
+		$this->timestamps = false;
+		$callback();
+		$bool = $this->save();
+		$this->timestamps = true;
+		return $bool;
+	}
+	
+	/**
+	 * 不会触发更新时间
+	 */
+	function touchField($field = 'fetched_at', $value = null): bool {
+		$this->timestamps = false;
+		if (is_null($value) and $this->{$field} instanceof Carbon) {
+			$this->{$field} = Carbon::now();
+		} else {
+			$this->{$field} = $value;
+		}
+		$bool = $this->save();
+		$this->timestamps = true;
+		return $bool;
 	}
 	
 	public static function findFromCache($id): ?static {

@@ -4,6 +4,7 @@ declare(strict_types = 1);
 namespace App\Controller;
 
 use App\Controller\Abstract\FS_Controller;
+use App\DataSet\DataSet;
 use App\FetchRule\FetchRule;
 use App\Middleware\AdminMiddleware;
 use App\Model\Author;
