@@ -28,7 +28,7 @@ class FetchLatestNovelTask {
 		'龍',
 		'虎',
 		'狼',
-		'狐',
+		'Sdorica',
 	];
 	
 	public function execute(): void {
