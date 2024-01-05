@@ -39,9 +39,7 @@ class FetchSingleNovelTask extends Job {
 				return;
 			}
 			$novel->updateFromFetchInfo($original);
-		}
-		
-		if (!$novel->isOneShot()) {
+			
 			$page = 0;
 			do {
 				$page++;
