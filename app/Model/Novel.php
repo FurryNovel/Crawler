@@ -3,6 +3,7 @@
 namespace App\Model;
 
 use App\DataSet\DataSet;
+use App\DataSet\LanguageService;
 use App\FetchRule\FetchRule;
 use App\FetchRule\NovelInfo;
 use App\Model\Model;
@@ -41,6 +42,8 @@ class Novel extends Model {
 	protected DataSet $dataSet;
 	#[Inject(lazy: true)]
 	protected MediaService $media;
+	#[Inject(lazy: true)]
+	protected LanguageService $language;
 	
 	const STATUS_PENDING = 'pending';
 	const STATUS_PUBLISH = 'publish';
@@ -171,7 +174,17 @@ class Novel extends Model {
 			$this->name = $novelInfo->name;
 			$this->cover = $novelInfo->cover;
 			$this->desc = $novelInfo->desc;
-			$this->tags = $novelInfo->tags;
+			$tags = $novelInfo->tags;
+			$text = $this->name . $this->desc . $this->author->nickname;
+			if (!empty($text)) {
+				$language = $this->language->detect($text);
+				$language = str_replace('-', '_', $language);
+				if (str_starts_with($language, 'zh')) {
+					$tags[] = 'zh';
+				}
+				$tags[] = $language;
+			}
+			$this->tags = array_unique($this->dataSet->convertToPattern(null, $tags));
 		});
 		return true;
 	}
