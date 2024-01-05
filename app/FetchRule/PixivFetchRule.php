@@ -35,7 +35,7 @@ class PixivFetchRule extends FetchRule {
 					'mode' => 'all',
 					's_mode' => 's_tag_full',
 					'gs' => 1,
-					'lang' => 'zh',
+					//'lang' => 'zh',
 					'version' => '42055d64ddbad5c0a69639e157b82e921bf63b31',
 					'p' => $page,
 				],
