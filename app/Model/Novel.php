@@ -156,6 +156,7 @@ class Novel extends Model {
 						'oneshot' => false
 					],
 			]);
+			$novel->updateTags($novelInfo->tags);
 			$novel->save();
 		}
 		if (!$novel->sync_status) {
@@ -169,22 +170,25 @@ class Novel extends Model {
 		return $novel;
 	}
 	
+	function updateTags(array $tags): void {
+		$text = $this->name . $this->desc . implode('', $tags);
+		if (!empty($text)) {
+			$language = $this->language->detect($text);
+			$language = str_replace('-', '_', $language);
+			if (str_starts_with($language, 'zh')) {
+				$tags[] = 'zh';
+			}
+			$tags[] = $language;
+		}
+		$this->tags = array_unique($this->dataSet->convertToPattern(null, $tags));
+	}
+	
 	function updateFromFetchInfo(NovelInfo $novelInfo): bool {
 		$this->doBackground(function () use ($novelInfo) {
 			$this->name = $novelInfo->name;
 			$this->cover = $novelInfo->cover;
 			$this->desc = $novelInfo->desc;
-			$tags = $novelInfo->tags;
-			$text = $this->name . $this->desc . implode('', $tags);
-			if (!empty($text)) {
-				$language = $this->language->detect($text);
-				$language = str_replace('-', '_', $language);
-				if (str_starts_with($language, 'zh')) {
-					$tags[] = 'zh';
-				}
-				$tags[] = $language;
-			}
-			$this->tags = array_unique($this->dataSet->convertToPattern(null, $tags));
+			$this->updateTags($novelInfo->tags);
 		});
 		return true;
 	}
