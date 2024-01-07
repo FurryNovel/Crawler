@@ -85,31 +85,30 @@ class FetchSingleNovelTask extends Job {
 			$modelChapter = Chapter::where('source_id', $novel->source_id)->first();
 			if ($modelChapter) {
 				$novel->updateTags($novel->tags, $modelChapter->content);
-				$novel->touchField('sync_status', 0);
-				return;
-			}
-			$chapter = $this->handleException(function () use ($novel, $rule) {
-				return $rule->fetchChapterContent($novel->source_id, $novel->source_id);
-			});
-			/**
-			 * @var ChapterInfo $chapter
-			 */
-			if ($chapter) {
-				Chapter::create([
-					'author_id' => $novel->author_id,
-					'novel_id' => $novel->id,
-					'name' => $chapter->name,
-					'content' => $chapter->content,
-					'tags' => [],
-					'ext_data' => [
-						'cover' => $chapter->cover
-					],
-					'text_count' => max($chapter->text_count ?? 0, mb_strlen($chapter->content)),
-					'word_count' => max($chapter->word_count ?? 0, mb_strlen($chapter->content)),
-					'status' => Chapter::STATUS_PUBLISH,
-					'source_id' => $chapter->id,
-				]);
-				$novel->updateTags($novel->tags, $chapter->content);
+			} else {
+				$chapter = $this->handleException(function () use ($novel, $rule) {
+					return $rule->fetchChapterContent($novel->source_id, $novel->source_id);
+				});
+				/**
+				 * @var ChapterInfo $chapter
+				 */
+				if ($chapter) {
+					Chapter::create([
+						'author_id' => $novel->author_id,
+						'novel_id' => $novel->id,
+						'name' => $chapter->name,
+						'content' => $chapter->content,
+						'tags' => [],
+						'ext_data' => [
+							'cover' => $chapter->cover
+						],
+						'text_count' => max($chapter->text_count ?? 0, mb_strlen($chapter->content)),
+						'word_count' => max($chapter->word_count ?? 0, mb_strlen($chapter->content)),
+						'status' => Chapter::STATUS_PUBLISH,
+						'source_id' => $chapter->id,
+					]);
+					$novel->updateTags($novel->tags, $chapter->content);
+				}
 			}
 		}
 		$novel->touchField('sync_status', 0);
