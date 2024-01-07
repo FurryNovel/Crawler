@@ -139,6 +139,8 @@ class NovelController extends FS_Controller {
 			return $this->error('小说未公开');
 		}
 		$novel->load(['latestChapters']);
+		//tags不触发getter
+		$novel->tags = $novel->tags ?? [];
 		return $this->success($novel);
 	}
 	
