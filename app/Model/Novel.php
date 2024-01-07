@@ -170,8 +170,12 @@ class Novel extends Model {
 		return $novel;
 	}
 	
-	function updateTags(array $tags): void {
-		$text = $this->name . $this->desc . implode('', $tags);
+	function updateTags(array $tags, string $content = ''): void {
+		$tags = $this->dataSet->convertToPattern(null, $tags);
+		$tags = array_values(array_filter($tags, function ($tag) {
+			return !in_array($tag, ['en', 'zh', 'ja', 'ko', 'zh_cn', 'zh_tw']);
+		}));
+		$text = $this->name . $this->desc . implode('', $tags) . $content;
 		if (!empty($text)) {
 			$language = $this->language->detect($text);
 			$language = str_replace('-', '_', $language);
@@ -180,7 +184,7 @@ class Novel extends Model {
 			}
 			$tags[] = $language;
 		}
-		$this->tags = array_unique($this->dataSet->convertToPattern(null, $tags));
+		$this->tags = array_unique($tags);
 	}
 	
 	function updateFromFetchInfo(NovelInfo $novelInfo): bool {

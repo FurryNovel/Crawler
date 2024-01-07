@@ -78,8 +78,13 @@ class FetchSingleNovelTask extends Job {
 					}
 				}
 			} while (!empty($chapterList));
+			if (!empty($chapter)) {
+				$novel->updateTags($novel->tags, $chapter->content);
+			}
 		} else {
-			if (Chapter::where('source_id', $novel->source_id)->first()) {
+			$modelChapter = Chapter::where('source_id', $novel->source_id)->first();
+			if ($modelChapter) {
+				$novel->updateTags($novel->tags, $modelChapter->content);
 				$novel->touchField('sync_status', 0);
 				return;
 			}
@@ -104,6 +109,7 @@ class FetchSingleNovelTask extends Job {
 					'status' => Chapter::STATUS_PUBLISH,
 					'source_id' => $chapter->id,
 				]);
+				$novel->updateTags($novel->tags, $chapter->content);
 			}
 		}
 		$novel->touchField('sync_status', 0);
