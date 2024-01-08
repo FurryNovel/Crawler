@@ -165,4 +165,11 @@ class SitemapController extends FS_Controller {
 				new SwooleStream($this->index())
 			);
 	}
+	
+	
+	#[RequestMapping(path: 'robots.txt', methods: 'get')]
+	function robots(): string {
+		$src = 'https://' . \Hyperf\Support\env('APP_DOMAIN') . \Hyperf\Support\env('API_ROOT') . '/sitemap/index.xml';
+		return 'sitemap: ' . $src;
+	}
 }
