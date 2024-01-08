@@ -17,6 +17,6 @@ class TaskFailedListener implements ListenerInterface {
 	}
 	
 	public function process(object $event): void {
-		Utils::err($event->throwable);
+		Utils::err($event->getThrowable());
 	}
 }
