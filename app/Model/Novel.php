@@ -172,7 +172,7 @@ class Novel extends Model {
 	
 	function updateTags(?array $tags = null, string $content = ''): void {
 		if (!$tags) {
-			$tags = $this->attributes['tags'] ?? [];
+			$tags = json_decode($this->attributes['tags'] ?? '[]', true);
 		}
 		$tags = $this->dataSet->convertToPattern(null, $tags);
 		$tags = array_values(array_filter($tags, function ($tag) {
