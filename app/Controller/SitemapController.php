@@ -167,7 +167,7 @@ class SitemapController extends FS_Controller {
 	}
 	
 	
-	#[RequestMapping(path: 'robots.txt', methods: 'get')]
+	#[RequestMapping(path: '/robots.txt', methods: 'get')]
 	function robots(): string {
 		$src = 'https://' . \Hyperf\Support\env('APP_DOMAIN') . \Hyperf\Support\env('API_ROOT') . '/sitemap/index.xml';
 		return 'sitemap: ' . $src;
