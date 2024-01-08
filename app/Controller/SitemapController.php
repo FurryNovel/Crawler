@@ -44,11 +44,19 @@ class SitemapController extends FS_Controller {
 		);
 	}
 	
-	#[Cacheable(ttl: 86400)]
+	/** @noinspection PhpUndefinedMethodInspection */
+	#[Cacheable(prefix: "sitemap", value: '_index', ttl: 86400)]
 	function index(): string {
 		$root = $this->getXmlRoot('sitemapindex');
 		$root->addAttribute('xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9');
-		$data = [];
+		
+		//page.xml
+		$sitemap = $root->addChild('sitemap');
+		$sitemap->addChild(
+			'loc',
+			'https://' . \Hyperf\Support\env('APP_DOMAIN') . \Hyperf\Support\env('API_ROOT') . '/sitemap/page.xml'
+		);
+		//model.xml
 		foreach (self::ROUTE as $model => $route) {
 			$name = strtolower(\Hyperf\Support\class_basename($model));
 			$pages = ceil($model::count('id') / self::MAX_PAGE);
@@ -60,10 +68,10 @@ class SitemapController extends FS_Controller {
 				);
 			}
 		}
-		return $this->withXml($data, $root);
+		return $this->withXml([], $root);
 	}
 	
-	#[Cacheable(ttl: 86400)]
+	#[Cacheable(prefix: "sitemap", value: '_novel', ttl: 86400)]
 	function novel(int $page = 1): string {
 		$root = $this->getXmlRoot('urlset');
 		$root->addAttribute('xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9');
@@ -74,7 +82,6 @@ class SitemapController extends FS_Controller {
 		$root->addAttribute('xmlns:pagemap', 'http://www.google.com/schemas/sitemap-pagemap/1.0');
 		$root->addAttribute('xmlns:xhtml', 'http://www.w3.org/1999/xhtml');
 		
-		$data = [];
 		
 		$items = \Hyperf\Collection\Collection::make(Novel::paginate(self::MAX_PAGE, ['*'], 'page', $page)->items());
 		$items->each(function (Novel $novel) use ($root) {
@@ -91,11 +98,11 @@ class SitemapController extends FS_Controller {
 			$link->addAttribute('hreflang', 'zh-CN');
 			$link->addAttribute('href', $src);
 		});
-		return $this->withXml($data, $root);
+		return $this->withXml([], $root);
 	}
 	
-	#[Cacheable(ttl: 86400)]
-	function pages(): string {
+	#[Cacheable(prefix: "sitemap", value: '_page', ttl: 86400)]
+	function page(): string {
 		$pages = [
 			'/pages/index/index' => [
 				'changefreq' => 'daily',
@@ -141,12 +148,12 @@ class SitemapController extends FS_Controller {
 			);
 	}
 	
-	#[RequestMapping(path: 'pages.xml', methods: 'get')]
-	function pagesWrapper(): \Psr\Http\Message\MessageInterface|\Psr\Http\Message\ResponseInterface {
+	#[RequestMapping(path: 'page.xml', methods: 'get')]
+	function pageWrapper(): \Psr\Http\Message\MessageInterface|\Psr\Http\Message\ResponseInterface {
 		return $this->response
 			->withAddedHeader('Content-Type', 'application/xml')
 			->withBody(
-				new SwooleStream($this->pages())
+				new SwooleStream($this->page())
 			);
 	}
 	
