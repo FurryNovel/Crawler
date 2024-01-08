@@ -79,12 +79,12 @@ class FetchSingleNovelTask extends Job {
 				}
 			} while (!empty($chapterList));
 			if (!empty($chapter)) {
-				$novel->updateTags($novel->tags, $chapter->content);
+				$novel->updateTags(null, $chapter->content);
 			}
 		} else {
 			$modelChapter = Chapter::where('source_id', $novel->source_id)->first();
 			if ($modelChapter) {
-				$novel->updateTags($novel->tags, $modelChapter->content);
+				$novel->updateTags(null, $modelChapter->content);
 			} else {
 				$chapter = $this->handleException(function () use ($novel, $rule) {
 					return $rule->fetchChapterContent($novel->source_id, $novel->source_id);
@@ -107,7 +107,7 @@ class FetchSingleNovelTask extends Job {
 						'status' => Chapter::STATUS_PUBLISH,
 						'source_id' => $chapter->id,
 					]);
-					$novel->updateTags($novel->tags, $chapter->content);
+					$novel->updateTags(null, $chapter->content);
 				}
 			}
 		}

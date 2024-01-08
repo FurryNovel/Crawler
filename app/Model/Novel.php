@@ -170,7 +170,10 @@ class Novel extends Model {
 		return $novel;
 	}
 	
-	function updateTags(array $tags, string $content = ''): void {
+	function updateTags(?array $tags = null, string $content = ''): void {
+		if (!$tags) {
+			$tags = $this->attributes['tags'] ?? [];
+		}
 		$tags = $this->dataSet->convertToPattern(null, $tags);
 		$tags = array_values(array_filter($tags, function ($tag) {
 			return !in_array($tag, ['en', 'zh', 'ja', 'ko', 'zh_cn', 'zh_tw']);
