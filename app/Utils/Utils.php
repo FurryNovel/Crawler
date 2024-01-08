@@ -4,6 +4,7 @@ namespace App\Utils;
 
 use Hyperf\Context\ApplicationContext;
 use Hyperf\HttpServer\Contract\RequestInterface;
+use Hyperf\Logger\LoggerFactory;
 
 class Utils {
 	const DEFAULT_LANGUAGE = 'zh_CN';
@@ -59,5 +60,18 @@ class Utils {
 		if ($str)
 			return str_replace(['%', '\\'], '', $str);
 		return null;
+	}
+	
+	static public function err(mixed $error): void {
+		$logger = ApplicationContext::getContainer()->get(LoggerFactory::class)->get('app');
+		if ($error instanceof \Throwable) {
+			$logger->error($error->getMessage(), [
+				'file' => $error->getFile(),
+				'line' => $error->getLine(),
+				'trace' => $error->getTraceAsString()
+			]);
+		} else {
+			$logger->error(json_encode($error));
+		}
 	}
 }
