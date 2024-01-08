@@ -64,7 +64,7 @@ class SitemapController extends FS_Controller {
 	}
 	
 	#[Cacheable(ttl: 86400)]
-	function novel(int $page = 1) {
+	function novel(int $page = 1): string {
 		$root = $this->getXmlRoot('urlset');
 		$root->addAttribute('xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9');
 		$root->addAttribute('xmlns:image', 'http://www.google.com/schemas/sitemap-image/1.1');
@@ -132,7 +132,6 @@ class SitemapController extends FS_Controller {
 		return $this->withXml([], $root);
 	}
 	
-	
 	#[RequestMapping(path: 'novel-{page:\d+}.xml', methods: 'get')]
 	function novelWrapper(int $page = 1): \Psr\Http\Message\MessageInterface|\Psr\Http\Message\ResponseInterface {
 		return $this->response
@@ -151,7 +150,6 @@ class SitemapController extends FS_Controller {
 			);
 	}
 	
-	
 	#[RequestMapping(path: 'index.xml', methods: 'get')]
 	function indexWrapper(): \Psr\Http\Message\MessageInterface|\Psr\Http\Message\ResponseInterface {
 		return $this->response
@@ -160,6 +158,4 @@ class SitemapController extends FS_Controller {
 				new SwooleStream($this->index())
 			);
 	}
-	
-	
 }
