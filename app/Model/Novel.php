@@ -187,7 +187,7 @@ class Novel extends Model {
 			}
 			$tags[] = $language;
 		}
-		$this->tags = array_unique($tags);
+		$this->attributes['tags'] = $this->asJson($this->dataSet->convertToPattern(null, array_unique($tags)));
 	}
 	
 	function updateFromFetchInfo(NovelInfo $novelInfo): bool {
