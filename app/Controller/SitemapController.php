@@ -34,13 +34,21 @@ class SitemapController extends FS_Controller {
 	
 	
 	function getXmlRoot($root): SimpleXMLElement {
-		return new SimpleXMLElement('<?xml version="1.0" encoding="utf-8"?>' . "<{$root}></{$root}>");
+		return new SimpleXMLElement(
+			'<?xml version="1.0" encoding="utf-8"?>' . "<{$root}></{$root}>");
 	}
 	
 	function withXml($data, $root): string {
-		return Xml::toXml(
-			$data,
-			$root,
+		return str_replace(
+			[
+				'xmlns:xmlns="xmlns" ',
+				'xmlns:xhtml="xhtml" ',
+			],
+			'',
+			Xml::toXml(
+				$data,
+				$root,
+			)
 		);
 	}
 	
@@ -75,12 +83,12 @@ class SitemapController extends FS_Controller {
 	function novel(int $page = 1): string {
 		$root = $this->getXmlRoot('urlset');
 		$root->addAttribute('xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9');
-		$root->addAttribute('xmlns:image', 'http://www.google.com/schemas/sitemap-image/1.1');
-		$root->addAttribute('xmlns:video', 'http://www.google.com/schemas/sitemap-video/1.1');
-		$root->addAttribute('xmlns:news', 'http://www.google.com/schemas/sitemap-news/0.9');
-		$root->addAttribute('xmlns:mobile', 'http://www.google.com/schemas/sitemap-mobile/1.0');
-		$root->addAttribute('xmlns:pagemap', 'http://www.google.com/schemas/sitemap-pagemap/1.0');
-		$root->addAttribute('xmlns:xhtml', 'http://www.w3.org/1999/xhtml');
+		$root->addAttribute('xmlns:image', 'http://www.google.com/schemas/sitemap-image/1.1', 'xmlns');
+		$root->addAttribute('xmlns:video', 'http://www.google.com/schemas/sitemap-video/1.1', 'xmlns');
+		$root->addAttribute('xmlns:news', 'http://www.google.com/schemas/sitemap-news/0.9', 'xmlns');
+		$root->addAttribute('xmlns:mobile', 'http://www.google.com/schemas/sitemap-mobile/1.0', 'xmlns');
+		$root->addAttribute('xmlns:pagemap', 'http://www.google.com/schemas/sitemap-pagemap/1.0', 'xmlns');
+		$root->addAttribute('xmlns:xhtml', 'http://www.w3.org/1999/xhtml', 'xmlns');
 		
 		
 		$items = \Hyperf\Collection\Collection::make(Novel::paginate(self::MAX_PAGE, ['*'], 'page', $page)->items());
@@ -93,7 +101,7 @@ class SitemapController extends FS_Controller {
 			$url->addChild('changefreq', 'daily');
 			$url->addChild('priority', '0.8');
 			
-			$link = $url->addChild('xhtml:link');
+			$link = $url->addChild('xhtml:link', null, 'xhtml');
 			$link->addAttribute('rel', 'alternate');
 			$link->addAttribute('hreflang', 'zh-CN');
 			$link->addAttribute('href', $src);
@@ -116,12 +124,12 @@ class SitemapController extends FS_Controller {
 		
 		$root = $this->getXmlRoot('urlset');
 		$root->addAttribute('xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9');
-		$root->addAttribute('xmlns:image', 'http://www.google.com/schemas/sitemap-image/1.1');
-		$root->addAttribute('xmlns:video', 'http://www.google.com/schemas/sitemap-video/1.1');
-		$root->addAttribute('xmlns:news', 'http://www.google.com/schemas/sitemap-news/0.9');
-		$root->addAttribute('xmlns:mobile', 'http://www.google.com/schemas/sitemap-mobile/1.0');
-		$root->addAttribute('xmlns:pagemap', 'http://www.google.com/schemas/sitemap-pagemap/1.0');
-		$root->addAttribute('xmlns:xhtml', 'http://www.w3.org/1999/xhtml');
+		$root->addAttribute('xmlns:image', 'http://www.google.com/schemas/sitemap-image/1.1', 'xmlns');
+		$root->addAttribute('xmlns:video', 'http://www.google.com/schemas/sitemap-video/1.1', 'xmlns');
+		$root->addAttribute('xmlns:news', 'http://www.google.com/schemas/sitemap-news/0.9', 'xmlns');
+		$root->addAttribute('xmlns:mobile', 'http://www.google.com/schemas/sitemap-mobile/1.0', 'xmlns');
+		$root->addAttribute('xmlns:pagemap', 'http://www.google.com/schemas/sitemap-pagemap/1.0', 'xmlns');
+		$root->addAttribute('xmlns:xhtml', 'http://www.w3.org/1999/xhtml', 'xmlns');
 		
 		foreach ($pages as $page => $info) {
 			$src = 'https://' . \Hyperf\Support\env('APP_DOMAIN') . $page;
@@ -131,7 +139,7 @@ class SitemapController extends FS_Controller {
 			$url->addChild('changefreq', $info['changefreq']);
 			$url->addChild('priority', $info['priority']);
 			
-			$link = $url->addChild('xhtml:link');
+			$link = $url->addChild('xhtml:link', null, 'xhtml');
 			$link->addAttribute('rel', 'alternate');
 			$link->addAttribute('hreflang', 'zh-CN');
 			$link->addAttribute('href', $src);
