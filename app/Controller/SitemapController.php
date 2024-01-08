@@ -62,7 +62,7 @@ class SitemapController extends FS_Controller {
 		$sitemap = $root->addChild('sitemap');
 		$sitemap->addChild(
 			'loc',
-			'https://' . \Hyperf\Support\env('APP_DOMAIN') . \Hyperf\Support\env('API_ROOT') . '/sitemap/page.xml'
+			'https://' . \Hyperf\Support\env('APP_DOMAIN') . \Hyperf\Support\env('API_ROOT') . '/sitemap/page.xml?v=' . $v
 		);
 		//model.xml
 		foreach (self::ROUTE as $model => $route) {
