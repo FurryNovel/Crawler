@@ -8,6 +8,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use Hyperf\Guzzle\CoroutineHandler;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Rct567\DomQuery\DomQuery;
 
 /**
  * @throws GuzzleException
@@ -152,12 +153,12 @@ class PixivFetchRule extends FetchRule {
 					$novel['title'],
 					$novel['userName'],
 					$novel['userId'],
-					$novel['cover']['urls']['original'] ?? '',
+					$novel['cover']['urls']['original'] ?? $novel['url'] ?? '',
 					$novel['caption'] ?? '',
 					$tags,
 					[
 						'oneshotId' => $novel['id'],
-						'oneshot' => false,
+						'oneshot' => true,
 					]
 				);
 			}
@@ -237,6 +238,135 @@ class PixivFetchRule extends FetchRule {
 			);
 		})->otherwise(function (\Throwable $e) {
 			return null;
+		})->wait();
+	}
+	
+	function fetchAuthorNovelList(string $authorId, string $page = '1'): array {
+		//需要登录
+		//https://www.pixiv.net/ajax/user/91465092/profile/all?lang=zh&version=0dae9f9dd5ed344926141ec0520331d086ada703
+		return $this->getRequest()->getAsync('/ajax/user/' . $authorId . '/profile/all', [
+			'query' => [
+				'lang' => 'zh',
+				'version' => '0dae9f9dd5ed344926141ec0520331d086ada703',
+			],
+		])->then(function (ResponseInterface $response) {
+			$response = json_decode($response->getBody()->getContents(), true);
+			$response = $response['body'];
+			return array_merge(
+				$response['novels'] ?? [],
+				array_column($response['novelSeries'] ?? [], null, 'id')
+			);
+		})->otherwise(function (\Throwable $e) {
+			return [];
+		})->then(function ($novels) use ($authorId) {
+			if (empty($novels)) {
+				return [];
+			}
+			//$novels 包含 Series、Oneshot
+			//https://www.pixiv.net/ajax/user/91465092/profile/novels
+			return $this->getRequest()->getAsync('/ajax/user/' . $authorId . '/profile/novels', [
+				'query' => [
+					'lang' => 'zh',
+					'version' => '0dae9f9dd5ed344926141ec0520331d086ada703',
+					'ids' => array_keys($novels),
+				],
+			])->then(function (ResponseInterface $response) use ($novels) {
+				$response = json_decode($response->getBody()->getContents(), true);
+				$response = $response['body'];
+				return array_merge($novels, $response['works'] ?? []);
+			})->otherwise(function (\Throwable $e) {
+				return [];
+			});
+		})->then(function ($novels) {
+			$novels = array_filter($novels, function ($novel) {
+				return empty($novel['seriesId']);
+			});
+			return array_map(function ($novel) {
+				$tags = $novel['tags'] ?? [];
+				if ($novel['aiType'] == 2) {
+					$tags[] = 'AI Generated';
+				}
+				if ($novel['language']) {
+					$tags[] = $novel['language'];
+				}
+				if (isset($novel['xRestrict'])) {
+					switch ($novel['xRestrict']) {
+						case 0:
+							$tags[] = 'SFW';
+							break;
+						case 1:
+							$tags[] = 'NSFW';
+							$tags[] = 'R-18';
+							break;
+						case 2:
+							$tags[] = 'NSFW';
+							$tags[] = 'R-18G';
+							break;
+					}
+				}
+				$oneshot = empty($novel['latestNovelId']);
+				if (!$oneshot) {
+					return new NovelInfo(
+						$novel['id'],
+						$novel['title'],
+						$novel['userName'],
+						$novel['userId'],
+						$novel['cover']['urls']['original'] ?? '',
+						$novel['caption'] ?? '',
+						$tags,
+						[
+							'oneshot' => false,
+						]
+					);
+				} else {
+					return new NovelInfo(
+						$novel['novelId'] ?? crc32($novel['id']),
+						$novel['title'],
+						$novel['userName'],
+						$novel['userId'],
+						$novel['cover']['urls']['original'] ?? $novel['url'] ?? '',
+						$novel['caption'] ?? $novel['description'] ?? '',
+						$tags,
+						[
+							'oneshotId' => $novel['id'],
+							'oneshot' => true,
+						]
+					);
+				}
+			}, $novels);
+		})->wait();
+	}
+	
+	function fetchAuthorList(string $name): array {
+		//需要登录
+		return $this->getRequest()->getAsync('/search_user.php', [
+			'query' => [
+				'nick_mf' => 1,
+				'nick' => $name,
+				's_mode' => 's_usr',
+			],
+		])->then(function (ResponseInterface $response) {
+			$response = $response->getBody()->getContents();
+			$authorList = [];
+			$dom = new DomQuery();
+			$dom->loadContent($response);
+			$dom->find('.user-recommendation-item')->each(function (DomQuery $item) use (&$authorList) {
+				$authorLink = $item->find('._user-icon')->attr('href');
+				$authorId = substr($authorLink, 7);
+				$authorAvatar = $item->find('._user-icon')->attr('data-src');
+				$authorName = $item->find('a.title')->text();
+				$desc = $item->find('.caption')->text();
+				$author = new AuthorInfo(
+					$authorId,
+					$authorAvatar,
+					$authorName,
+					$desc
+				);
+				$authorList[] = $author;
+			});
+			return $authorList;
+		})->otherwise(function (\Throwable $e) {
+			return [];
 		})->wait();
 	}
 }

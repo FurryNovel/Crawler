@@ -73,7 +73,7 @@ abstract class FetchRule {
 	/**
 	 * 获取小说详情
 	 * @param string $novelId
-	 * @return NovelInfo
+	 * @return ?NovelInfo
 	 * @throws GuzzleException
 	 */
 	abstract function fetchNovelDetail(string $novelId): ?NovelInfo;
@@ -90,17 +90,32 @@ abstract class FetchRule {
 	 * 获取章节内容
 	 * @param string $novelId
 	 * @param string $chapterId
-	 * @return string
+	 * @return ?ChapterInfo
 	 */
 	abstract function fetchChapterContent(string $novelId, string $chapterId): ?ChapterInfo;
 	
 	/**
 	 * 获取作者信息
 	 * @param string $authorId
-	 * @return AuthorInfo
+	 * @return ?AuthorInfo
 	 * @throws GuzzleException
 	 */
 	abstract function fetchAuthorInfo(string $authorId): ?AuthorInfo;
+	
+	/**
+	 * 获取作者小说列表
+	 * @param string $authorId
+	 * @param string $page
+	 * @return NovelInfo[]
+	 */
+	abstract function fetchAuthorNovelList(string $authorId, string $page = '1'): array;
+	
+	/**
+	 * 获取作者列表
+	 * @param string $name
+	 * @return AuthorInfo[]
+	 */
+	abstract function fetchAuthorList(string $name): array;
 	
 	function processContent(string $content): string {
 		return $content;

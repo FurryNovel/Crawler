@@ -162,6 +162,7 @@ class BilibiliFetchRule extends FetchRule {
 		$dom = new DomQuery();
 		$dom->loadContent($content);
 		$dom->each($processor);
+		unset($processor);
 		return $res;
 	}
 	
@@ -186,5 +187,13 @@ class BilibiliFetchRule extends FetchRule {
 		})->otherwise(function (\Throwable $e) {
 			return null;
 		})->wait();
+	}
+	
+	function fetchAuthorNovelList(string $authorId, string $page = '1'): array {
+		return [];
+	}
+	
+	function fetchAuthorList(string $name): array {
+		return [];
 	}
 }
