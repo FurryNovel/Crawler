@@ -23,6 +23,17 @@ class PixivFetchRule extends FetchRule {
 			'handler' => $this->getRequestHandler(),
 			'base_uri' => 'https://www.pixiv.net/',
 			'timeout' => 15,
+			'headers' => [
+				'Cookie' => implode('; ', [
+					'device_token' => '6b01cc6c401536fb0ba4d8fd3081661b',
+					'privacy_policy_agreement' => '6',
+					'privacy_policy_notification' => '0',
+					'a_type' => '0',
+					'b_type' => '0',
+					'c_type' => '27',
+					'PHPSESSID' => '102396730_GZydXaWyXSeeydAv92srg9Mx2HScQ5dW',
+				])
+			],
 		]);
 	}
 	
