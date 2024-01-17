@@ -161,7 +161,7 @@ class PixivFetchRule extends FetchRule {
 					$novel['caption'] ?? '',
 					$tags,
 					[
-						'oneshotId' => $novel['id'],
+						'oneshotId' => $novel['id'] ?? crc32($novel['novelId']),
 						'oneshot' => true,
 					]
 				);
@@ -324,7 +324,7 @@ class PixivFetchRule extends FetchRule {
 					);
 				} else {
 					return new NovelInfo(
-						$novel['novelId'] ?? crc32($novel['id']),
+						$novel['novelId'],
 						$novel['title'],
 						$novel['userName'],
 						$novel['userId'],
@@ -332,7 +332,7 @@ class PixivFetchRule extends FetchRule {
 						$novel['caption'] ?? $novel['description'] ?? '',
 						$tags,
 						[
-							'oneshotId' => $novel['id'],
+							'oneshotId' => $novel['id'] ?? crc32($novel['novelId']),
 							'oneshot' => true,
 						]
 					);

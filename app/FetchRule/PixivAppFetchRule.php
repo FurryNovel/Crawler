@@ -144,7 +144,7 @@ class PixivAppFetchRule extends PixivFetchRule {
 						);
 					} else {
 						return new NovelInfo(
-							crc32($novel['id']),
+							$novel['id'],
 							$novel['title'],
 							$novel['user']['name'] ?? '',
 							$novel['user']['id'],
@@ -152,7 +152,7 @@ class PixivAppFetchRule extends PixivFetchRule {
 							$novel['caption'] ?? '',
 							$tags,
 							[
-								'oneshotId' => $novel['id'],
+								'oneshotId' => crc32($novel['id']),
 								'oneshot' => true,
 							]
 						);
