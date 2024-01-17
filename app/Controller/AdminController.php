@@ -13,6 +13,7 @@ use App\Model\Chapter;
 use App\Model\Novel;
 use App\Model\User;
 use App\Service\FetchQueueService;
+use App\Task\FetchLatestNovelTask;
 use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\Collection;
 use Hyperf\Di\Annotation\Inject;
