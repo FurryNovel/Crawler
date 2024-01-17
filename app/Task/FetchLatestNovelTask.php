@@ -34,11 +34,11 @@ class FetchLatestNovelTask {
 	public function execute(): void {
 		$cache = \FriendsOfHyperf\Helpers\cache();
 		foreach (self::TAGS as $tag) {
-			foreach (FetchRule::RULES as $rule => $class) {
-				$rule = FetchRule::getRule($rule);
+			foreach (FetchRule::RULES as $type => $class) {
+				$rule = FetchRule::getRule($type);
 				$page = 1;
 				$max_page = PHP_INT_MAX;
-				$last_id = $cache->get(sprintf('fetch_latest_%s_%s', $rule->getType(), $tag), null);
+				$last_id = $cache->get(sprintf('fetch_latest_%s_%s', $type, $tag), null);
 				if (!$last_id) {
 					$max_page = 5;
 				}
@@ -46,7 +46,7 @@ class FetchLatestNovelTask {
 				while ($page < $max_page) {
 					$novels = $rule->fetchNovelList($tag, $page);
 					if ($is_first and !empty($novels)) {
-						$cache->set(sprintf('fetch_latest_%s_%s', $rule->getType(), $tag), $novels[0]->id ?? null);
+						$cache->set(sprintf('fetch_latest_%s_%s', $type, $tag), $novels[0]->id ?? null);
 						$is_first = false;
 					}
 					foreach ($novels as $novelInfo) {

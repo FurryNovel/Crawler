@@ -14,6 +14,7 @@ abstract class FetchRule {
 	const RULES = [
 		'pixiv' => PixivFetchRule::class,
 		'bilibili' => BilibiliFetchRule::class,
+		'pixiv_app' => PixivAppFetchRule::class,
 	];
 	
 	const IP_LIST = [

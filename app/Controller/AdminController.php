@@ -56,6 +56,10 @@ class AdminController extends FS_Controller {
 		);
 	}
 	
+	function test() {
+		$rule = FetchRule::getRule('pixiv_app');
+		return $this->success($rule->fetchNovelList());
+	}
 	
 	function process_tags() {
 		Novel::chunk(10, function (Collection $novels) {
