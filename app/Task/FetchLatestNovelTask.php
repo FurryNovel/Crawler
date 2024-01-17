@@ -21,14 +21,11 @@ class FetchLatestNovelTask {
 		'furry',
 		'兽人',
 		'獣人',
-//		'ケモノ',
+		'ケモノ',
 		'transfur',
-		'TF',
 		'龙',
-		'龍',
 		'虎',
 		'狼',
-		'Sdorica',
 	];
 	
 	public function execute(): void {

@@ -79,7 +79,7 @@ class PixivAppFetchRule extends PixivFetchRule {
 			->getAsync('https://app-api.pixiv.net/v1/search/novel', [
 				'query' => [
 					'word' => $tag,
-					//'search_target' => 'partial_match_for_tags',
+					'search_target' => 'exact_match_for_tags',
 					'include_translated_tag_results' => 'true',
 					'merge_plain_keyword_results' => 'true',
 					'sort' => 'date_desc',
@@ -144,7 +144,7 @@ class PixivAppFetchRule extends PixivFetchRule {
 						);
 					} else {
 						return new NovelInfo(
-							$novel['novelId'] ?? crc32($novel['id']),
+							crc32($novel['id']),
 							$novel['title'],
 							$novel['user']['name'] ?? '',
 							$novel['user']['id'],

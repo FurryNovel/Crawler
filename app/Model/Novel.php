@@ -138,6 +138,7 @@ class Novel extends Model {
 		 */
 		$novel = Novel::where(function (Builder $query) use ($novelInfo) {
 			$query->where('source_id', $novelInfo->id);
+			$query->orWhere('ext_data', 'like', '%"' . $novelInfo->id . '"%');
 		})->first();
 		if (!$novel) {
 			$novel = new Novel([
