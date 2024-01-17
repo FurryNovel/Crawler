@@ -22,7 +22,7 @@ class FetchUpdateNovelTask {
 		Novel::where(function (Builder $query) {
 			$query->where('fetched_at', '<', Carbon::now()->subHours(8));
 			$query->where('status', Novel::STATUS_PUBLISH);
-			$query->where('sync_status', '<>', 2);
+			$query->where('sync_status', 0);
 		})->chunkById(10, function (Collection $novels) {
 			$novels->each(function (Novel $novel) {
 				$rule = FetchRule::getRule($novel->source);
