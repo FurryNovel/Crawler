@@ -195,7 +195,7 @@ class PixivFetchRule extends FetchRule {
 				);
 			}, $response['body']['page']['seriesContents']);
 		})->otherwise(function (\Throwable $e) {
-			return null;
+			return [];
 		})->wait();
 	}
 	
