@@ -74,6 +74,9 @@ class PixivAppFetchRule extends PixivFetchRule {
 	
 	
 	function fetchNovelList(string $tag = 'furry', string $page = '1'): array {
+		if (intval($page) > 30) {
+			return [];
+		}
 		//https://app-api.pixiv.net/v1/search/novel?sort=date_desc&word=furry&include_translated_tag_results=true&merge_plain_keyword_results=true
 		return $this->getRequest()
 			->getAsync('https://app-api.pixiv.net/v1/search/novel', [

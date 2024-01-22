@@ -35,7 +35,7 @@ class FetchLatestNovelTask {
 				try {
 					$rule = FetchRule::getRule($type);
 					$page = 1;
-					$max_page = PHP_INT_MAX;
+					$max_page = 30;
 					$last_id = $cache->get(sprintf('fetch_latest_%s_%s', $type, $tag), null);
 					if (!$last_id) {
 						$max_page = 5;
