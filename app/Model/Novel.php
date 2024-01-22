@@ -40,9 +40,9 @@ use Hyperf\Di\Annotation\Inject;
 class Novel extends Model {
 	#[Inject]
 	protected DataSet $dataSet;
-	#[Inject(lazy: true)]
+	#[Inject]
 	protected MediaService $media;
-	#[Inject(lazy: true)]
+	#[Inject]
 	protected LanguageService $language;
 	
 	const STATUS_PENDING = 'pending';

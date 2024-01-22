@@ -26,7 +26,7 @@ class AdminController extends FS_Controller {
 	#[Inject]
 	protected DataSet $dataSet;
 	
-	#[Inject(lazy: true)]
+	#[Inject]
 	protected LanguageService $language;
 	
 	function fetch_novel(string $type, string $rule_novel_id): array {
