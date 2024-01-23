@@ -126,10 +126,13 @@ class NovelController extends FS_Controller {
 	#[RequestMapping(path: '', methods: 'get')]
 	function index(bool $with_chapters = false): array {
 		$query = $this->baseQuery();
+		$data = $query->paginate();
 		if ($with_chapters) {
-			$query = $query->with(['latestChapters']);
+			$data->getCollection()->each(function (Novel $novel) {
+				$novel->load(['latestChapters']);
+			});
 		}
-		return $this->success($query->paginate(), '获取成功');
+		return $this->success($data, '获取成功');
 	}
 	
 	#[RequestMapping(path: '{novel_id:\d+}', methods: 'get')]
