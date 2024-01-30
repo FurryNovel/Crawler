@@ -23,6 +23,9 @@ class MediaService {
 	}
 	
 	function getKey($url): string {
+		//兼容旧缓存，统一使用i.pixiv.re
+		$url = str_replace('{domain}', 'i.pixiv.re', $url);
+		
 		$ext = pathinfo($url, PATHINFO_EXTENSION);
 		$key = md5($url);
 		if ($ext) {
