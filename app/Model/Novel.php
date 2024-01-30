@@ -92,16 +92,6 @@ class Novel extends Model {
 	}
 	
 	function getCoverAttribute($value): string {
-		$value = str_replace(
-			[
-				'i.pximg.net'
-			],
-			[
-				'i.pixiv.re',
-//				'img.tigerkk.me'
-			],
-			$value
-		);
 		return $this->media->getUri($value);
 	}
 	
