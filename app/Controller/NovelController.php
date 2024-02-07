@@ -14,6 +14,8 @@ use Hyperf\Database\Query\JoinClause;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\RequestMapping;
+use Psr\SimpleCache\CacheInterface;
+use function FriendsOfHyperf\Helpers\di;
 
 #[Controller]
 class NovelController extends FS_Controller {
@@ -144,6 +146,15 @@ class NovelController extends FS_Controller {
 		$novel->load(['latestChapters']);
 		//tags不触发getter
 		$novel->tags = $novel->tags ?? [];
+		
+		//增加访问计数
+		$redis = di(\Hyperf\Redis\Redis::class);
+		if (!$redis->hExists('novel:view_count', $novel_id)) {
+			$redis->hSet('novel:view_count', $novel_id, $novel->view_count);
+		}
+		$redis->hIncrBy('novel:view_count', $novel_id, 1);
+		
+		//
 		return $this->success($novel);
 	}
 	
