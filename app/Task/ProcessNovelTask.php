@@ -27,8 +27,9 @@ class ProcessNovelTask {
 			foreach ($novels as $key => $value) {
 				$novel = Novel::find($key);
 				if ($novel) {
-					$novel->view_count = $value;
-					$novel->save();
+					$novel->doBackground(function () use ($novel, $value) {
+						$novel->view_count = $value;
+					});
 				}
 			}
 		}
