@@ -2,7 +2,7 @@
 
 return [
 	'default' => [
-		'driver' => Hyperf\AsyncQueue\Driver\RedisDriver::class,
+		'driver' => App\Driver\RedisDriver::class,
 		'redis' => [
 			'pool' => 'default'
 		],

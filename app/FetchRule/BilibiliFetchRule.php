@@ -132,36 +132,58 @@ class BilibiliFetchRule extends FetchRule {
 	
 	function processContent(string $content): string {
 		$res = '';
-		$processor = function (DOMNode $node) use (&$res, &$processor) {
-			switch ($node->nodeName) {
-				case 'p':
-					$res .= "{$node->textContent}\n";
-					break;
-				case 'img':
-					$class = $node->getAttribute('class');
-					if (str_starts_with($class, 'cut-off')) {
-						$res .= "[hr][/hr]\n";
+		if (!\json_validate($content)) {
+			$processor = function (DOMNode $node) use (&$res, &$processor) {
+				switch ($node->nodeName) {
+					case 'p':
+						$res .= "{$node->textContent}\n";
 						break;
+					case 'img':
+						$class = $node->getAttribute('class');
+						if (str_starts_with($class, 'cut-off')) {
+							$res .= "[hr][/hr]\n";
+							break;
+						}
+						$src = $node->getAttribute('data-src');
+						$res .= "[img]{$src}[/img]\n";
+						break;
+					case 'figure':
+						foreach ($node->childNodes as $childNode) {
+							$processor($childNode);
+						}
+						break;
+					case 'figcaption':
+						$res .= "[figcaption]{$node->textContent}[/figcaption]\n";
+						break;
+					case 'br':
+						$res .= "\n";
+						break;
+				}
+			};
+			$dom = new DomQuery();
+			$dom->loadContent($content);
+			$dom->each($processor);
+			unset($processor);
+		} else {
+			$data = json_decode($content, true);
+			foreach ($data['ops'] as $line) {
+				if (is_string($line['insert'])) {
+					if (!empty($line['attributes']['bold'])) {
+						$res .= "[b]{$line['insert']}[/b]\n";
+					} else {
+						$res .= $line['insert'];
 					}
-					$src = $node->getAttribute('data-src');
-					$res .= "[img]{$src}[/img]\n";
-					break;
-				case 'figure':
-					foreach ($node->childNodes as $childNode) {
-						$processor($childNode);
+				} elseif (is_array($line['insert'])) {
+					foreach ($line['insert'] as $k => $item) {
+						if (str_contains($k, 'image')) {
+							if (isset($item['url']))
+								$res .= "[img]{$item['url']}[/img]\n";
+						}
 					}
-					break;
-				case 'figcaption':
-					$res .= "[figcaption]{$node->textContent}[/figcaption]\n";
-					break;
-				case 'br':
-					$res .= "\n";
-					break;
+				}
+				$res .= "\n";
 			}
-		};
-		$dom = new DomQuery();
-		$dom->loadContent($content);
-		$dom->each($processor);
+		}
 		return $res;
 	}
 	
@@ -186,5 +208,13 @@ class BilibiliFetchRule extends FetchRule {
 		})->otherwise(function (\Throwable $e) {
 			return null;
 		})->wait();
+	}
+	
+	function fetchAuthorNovelList(string $authorId, string $page = '1'): array {
+		return [];
+	}
+	
+	function fetchAuthorList(string $name): array {
+		return [];
 	}
 }

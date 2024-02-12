@@ -13,6 +13,7 @@ use App\Model\Chapter;
 use App\Model\Novel;
 use App\Model\User;
 use App\Service\FetchQueueService;
+use App\Task\FetchLatestNovelTask;
 use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\Collection;
 use Hyperf\Di\Annotation\Inject;
@@ -25,7 +26,7 @@ class AdminController extends FS_Controller {
 	#[Inject]
 	protected DataSet $dataSet;
 	
-	#[Inject(lazy: true)]
+	#[Inject]
 	protected LanguageService $language;
 	
 	function fetch_novel(string $type, string $rule_novel_id): array {
@@ -56,6 +57,10 @@ class AdminController extends FS_Controller {
 		);
 	}
 	
+	function test() {
+		$rule = FetchRule::getRule('pixiv_app');
+		return $this->success($rule->fetchNovelList());
+	}
 	
 	function process_tags() {
 		Novel::chunk(10, function (Collection $novels) {

@@ -40,9 +40,9 @@ use Hyperf\Di\Annotation\Inject;
 class Novel extends Model {
 	#[Inject]
 	protected DataSet $dataSet;
-	#[Inject(lazy: true)]
+	#[Inject]
 	protected MediaService $media;
-	#[Inject(lazy: true)]
+	#[Inject]
 	protected LanguageService $language;
 	
 	const STATUS_PENDING = 'pending';
@@ -92,16 +92,6 @@ class Novel extends Model {
 	}
 	
 	function getCoverAttribute($value): string {
-		$value = str_replace(
-			[
-				'i.pximg.net'
-			],
-			[
-				'i.pixiv.re',
-//				'img.tigerkk.me'
-			],
-			$value
-		);
 		return $this->media->getUri($value);
 	}
 	

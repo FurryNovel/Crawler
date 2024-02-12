@@ -14,6 +14,8 @@ use Hyperf\Database\Query\JoinClause;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\RequestMapping;
+use Psr\SimpleCache\CacheInterface;
+use function FriendsOfHyperf\Helpers\di;
 
 #[Controller]
 class NovelController extends FS_Controller {
@@ -126,13 +128,16 @@ class NovelController extends FS_Controller {
 	#[RequestMapping(path: '', methods: 'get')]
 	function index(bool $with_chapters = false, int $limit = 15): array {
 		$query = $this->baseQuery();
-		if ($with_chapters) {
-			$query = $query->with(['latestChapters']);
-		}
 		if ($limit > 30 || $limit < 1) {
 			$limit = 15;
 		}
-		return $this->success($query->paginate($limit), '获取成功');
+		$data = $query->paginate($limit);
+		if ($with_chapters) {
+			$data->getCollection()->each(function (Novel $novel) {
+				$novel->load(['latestChapters']);
+			});
+		}
+		return $this->success($data, '获取成功');
 	}
 	
 	#[RequestMapping(path: '{novel_id:\d+}', methods: 'get')]
@@ -144,6 +149,15 @@ class NovelController extends FS_Controller {
 		$novel->load(['latestChapters']);
 		//tags不触发getter
 		$novel->tags = $novel->tags ?? [];
+		
+		//增加访问计数
+		$redis = di(\Hyperf\Redis\Redis::class);
+		if (!$redis->hExists('novel:view_count', $novel_id)) {
+			$redis->hSet('novel:view_count', $novel_id, $novel->view_count);
+		}
+		$redis->hIncrBy('novel:view_count', $novel_id, 1);
+		
+		//
 		return $this->success($novel);
 	}
 	

@@ -23,6 +23,9 @@ class MediaService {
 	}
 	
 	function getKey($url): string {
+		//兼容旧缓存，统一使用i.pixiv.re计算key
+		$url = str_replace('{domain}', 'i.pixiv.re', $url);
+		
 		$ext = pathinfo($url, PATHINFO_EXTENSION);
 		$key = md5($url);
 		if ($ext) {
@@ -41,10 +44,19 @@ class MediaService {
 		$root = \Hyperf\Support\env('APP_DOMAIN');
 		$root .= \Hyperf\Support\env('API_ROOT');
 		$url = "https://{$root}/media/image";
+		$origin_url = str_replace('i.pximg.net', '{domain}', $origin_url);
 		return $url . '?' . http_build_query([
 				'url' => $origin_url,
 				'sign' => $this->sign($origin_url),
 			]);
+	}
+	
+	function getOriginUrl($url): string {
+		$domain = [
+			'i.pixiv.re',
+//			'i.pximg.net'
+		][0];
+		return str_replace('{domain}', $domain, $url);
 	}
 	
 	
@@ -70,7 +82,7 @@ class MediaService {
 					'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36',
 			],
 		]);
-		$res = $client->get($url, [
+		$res = $client->get($this->getOriginUrl($url), [
 			'verify' => false,
 		]);
 		try {
