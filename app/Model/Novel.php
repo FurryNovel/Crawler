@@ -217,9 +217,9 @@ class Novel extends Model {
 	
 	function delayUpdateViewCount(): void {
 		$redis = di(\Hyperf\Redis\Redis::class);
-		if (!$redis->hExists('novel:view_count', $this->id)) {
-			$redis->hSet('novel:view_count', $this->id, $this->view_count);
+		if (!$redis->hExists('novel:view_count', (string)$this->id)) {
+			$redis->hSet('novel:view_count', (string)$this->id, $this->view_count);
 		}
-		$redis->hIncrBy('novel:view_count', $this->id, 1);
+		$redis->hIncrBy('novel:view_count', (string)$this->id, 1);
 	}
 }
