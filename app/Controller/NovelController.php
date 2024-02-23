@@ -147,14 +147,8 @@ class NovelController extends FS_Controller {
 		//tags不触发getter
 		$novel->tags = $novel->tags ?? [];
 		
-		//增加访问计数
-		$redis = di(\Hyperf\Redis\Redis::class);
-		if (!$redis->hExists('novel:view_count', $novel_id)) {
-			$redis->hSet('novel:view_count', $novel_id, $novel->view_count);
-		}
-		$redis->hIncrBy('novel:view_count', $novel_id, 1);
-		
 		//
+		$novel->delayUpdateViewCount();
 		return $this->success($novel);
 	}
 	

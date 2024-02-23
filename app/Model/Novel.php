@@ -17,6 +17,7 @@ use Hyperf\Database\Model\Events\Saved;
 use Hyperf\Database\Model\Relations\HasMany;
 use Hyperf\Database\Model\Relations\HasOne;
 use Hyperf\Di\Annotation\Inject;
+use function FriendsOfHyperf\Helpers\di;
 
 /**
  * @property int $id 小说ID
@@ -209,5 +210,13 @@ class Novel extends Model {
 			}
 		} catch (\Throwable $exception) {
 		}
+	}
+	
+	function delayUpdateViewCount(): void {
+		$redis = di(\Hyperf\Redis\Redis::class);
+		if (!$redis->hExists('novel:view_count', $this->id)) {
+			$redis->hSet('novel:view_count', $this->id, $this->view_count);
+		}
+		$redis->hIncrBy('novel:view_count', $this->id, 1);
 	}
 }
