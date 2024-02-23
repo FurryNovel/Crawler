@@ -122,6 +122,9 @@ class Novel extends Model {
 					base64_encode('kk_novel_' . $authorInfo->name),
 					[]
 				);
+				$author->desc = $authorInfo->desc;
+				$author->avatar = $authorInfo->avatar;
+				$author->save();
 			}
 		}
 		/**

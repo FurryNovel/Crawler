@@ -12,6 +12,8 @@ use Qbhy\HyperfAuth\Authenticatable;
 /**
  * @property int $id
  * @property string $type 用户类型：TYPE_xxx
+ * @property string $avatar 头像
+ * @property string $banner 封面
  * @property string $name 用户名
  * @property string $password 密码
  * @property string $nickname 昵称
