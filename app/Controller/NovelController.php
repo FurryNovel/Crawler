@@ -126,9 +126,12 @@ class NovelController extends FS_Controller {
 	}
 	
 	#[RequestMapping(path: '', methods: 'get')]
-	function index(bool $with_chapters = false): array {
+	function index(bool $with_chapters = false, int $limit = 15): array {
 		$query = $this->baseQuery();
-		$data = $query->paginate();
+		if ($limit > 30 || $limit < 1) {
+			$limit = 15;
+		}
+		$data = $query->paginate($limit);
 		if ($with_chapters) {
 			$data->getCollection()->each(function (Novel $novel) {
 				$novel->load(['latestChapters']);
