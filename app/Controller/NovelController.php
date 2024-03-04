@@ -151,9 +151,24 @@ class NovelController extends FS_Controller {
 		$novel->tags = $novel->tags ?? [];
 		
 		//
-		$novel->delayUpdateViewCount();
+		$novel->delayInc('view_count', 1);
 		return $this->success($novel);
 	}
+	
+	
+	#[RequestMapping(path: '{novel_id:\d+}/action/{action_name}')]
+	function action(string $novel_id, string $action_name): array {
+		$novel = Novel::findFromCache($novel_id);
+		if (!$novel or $novel->status !== Novel::STATUS_PUBLISH) {
+			return $this->error('小说未公开');
+		}
+		if (!in_array($action_name, $novel->getLazy())) {
+			return $this->error('不支持的操作');
+		}
+		$novel->delayInc($action_name . '_count', 1);
+		return $this->success($novel);
+	}
+	
 	
 	#[Cacheable(prefix: __CLASS__, ttl: 300)]
 	#[RequestMapping(path: '{novel_id:\d+}/chapter[/{chapter_id:\d+}]', methods: 'get')]
