@@ -150,16 +150,25 @@ class NovelController extends FS_Controller {
 		//tags不触发getter
 		$novel->tags = $novel->tags ?? [];
 		
-		//增加访问计数
-		$redis = di(\Hyperf\Redis\Redis::class);
-		if (!$redis->hExists('novel:view_count', $novel_id)) {
-			$redis->hSet('novel:view_count', $novel_id, $novel->view_count);
-		}
-		$redis->hIncrBy('novel:view_count', $novel_id, 1);
-		
 		//
+		$novel->delayInc('view_count', 1);
 		return $this->success($novel);
 	}
+	
+	
+	#[RequestMapping(path: '{novel_id:\d+}/action/{action_name}')]
+	function action(string $novel_id, string $action_name): array {
+		$novel = Novel::findFromCache($novel_id);
+		if (!$novel or $novel->status !== Novel::STATUS_PUBLISH) {
+			return $this->error('小说未公开');
+		}
+		if (!in_array($action_name, $novel->getLazy())) {
+			return $this->error('不支持的操作');
+		}
+		$novel->delayInc($action_name . '_count', 1);
+		return $this->success($novel);
+	}
+	
 	
 	#[Cacheable(prefix: __CLASS__, ttl: 300)]
 	#[RequestMapping(path: '{novel_id:\d+}/chapter[/{chapter_id:\d+}]', methods: 'get')]

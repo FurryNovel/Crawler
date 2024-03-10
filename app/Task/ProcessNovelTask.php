@@ -19,20 +19,21 @@ class ProcessNovelTask {
 	protected \Hyperf\Redis\Redis $redis;
 	
 	public function execute(): void {
-		$cursor = null;
-		if (!$this->redis->exists('novel:view_count')) {
-			return;
-		}
-		while ($novels = $this->redis->hScan('novel:view_count', $cursor, '*', 1000)) {
-			foreach ($novels as $key => $value) {
-				$novel = Novel::find($key);
-				if ($novel) {
-					$novel->doBackground(function () use ($novel, $value) {
+		$novel = new Novel();
+		foreach ($novel->getLazy() as $field) {
+			$cursor = null;
+			if (!$this->redis->exists("novel:$field")) {
+				continue;
+			}
+			while ($novels = $this->redis->hScan("novel:$field", $cursor, '*', 1000)) {
+				foreach ($novels as $key => $value) {
+					$novel = Novel::find($key);
+					$novel?->doBackground(function () use ($novel, $value) {
 						$novel->view_count = $value;
 					});
 				}
 			}
 		}
+		unset($novel);
 	}
-	
 }

@@ -17,6 +17,7 @@ use Hyperf\Database\Model\Events\Saved;
 use Hyperf\Database\Model\Relations\HasMany;
 use Hyperf\Database\Model\Relations\HasOne;
 use Hyperf\Di\Annotation\Inject;
+use function FriendsOfHyperf\Helpers\di;
 
 /**
  * @property int $id 小说ID
@@ -31,6 +32,7 @@ use Hyperf\Di\Annotation\Inject;
  * @property string $source_id 来源ID
  * @property array $ext_data 额外信息
  * @property int $view_count 阅读量
+ * @property int $like_count 阅读量
  * @property int $sync_status 同步状态:0正常,1同步中,2规则不存在
  * @property string $status 状态
  * @property Carbon $created_at
@@ -66,6 +68,12 @@ class Novel extends Model {
 	protected array $hidden = [
 		'chapters',
 	];
+	
+	protected array $lazy = [
+		'view_count',
+		'like_count',
+	];
+	
 	
 	function author(): HasOne {
 		return $this->hasOne(Author::class, 'id', 'author_id');
@@ -121,6 +129,9 @@ class Novel extends Model {
 					base64_encode('kk_novel_' . $authorInfo->name),
 					[]
 				);
+				$author->desc = $authorInfo->desc;
+				$author->avatar = $authorInfo->avatar;
+				$author->save();
 			}
 		}
 		/**
@@ -209,5 +220,17 @@ class Novel extends Model {
 			}
 		} catch (\Throwable $exception) {
 		}
+	}
+	
+	function delayInc($field, $count): void {
+		$redis = di(\Hyperf\Redis\Redis::class);
+		if (!$redis->hExists("novel:$field", (string)$this->id)) {
+			$redis->hSet("novel:$field", (string)$this->id, $this->view_count + 1);
+		}
+		$redis->hIncrBy("novel:$field", (string)$this->id, $count);
+	}
+	
+	function getLazy(): array {
+		return $this->lazy;
 	}
 }

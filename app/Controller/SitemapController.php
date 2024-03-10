@@ -27,7 +27,7 @@ use SimpleXMLElement;
 #[Controller]
 class SitemapController extends FS_Controller {
 	const ROUTE = [
-		Novel::class => '/pages/novel/info?id=%d',
+		Novel::class => '/novel/%d',
 	];
 	
 	const MAX_PAGE = 500;
@@ -54,7 +54,7 @@ class SitemapController extends FS_Controller {
 	
 	/** @noinspection PhpUndefinedMethodInspection */
 	#[Cacheable(prefix: "sitemap", value: '_index', ttl: 86400)]
-	function index($v = 2): string {
+	function index($v = 3): string {
 		$root = $this->getXmlRoot('sitemapindex');
 		$root->addAttribute('xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9');
 		
@@ -112,11 +112,11 @@ class SitemapController extends FS_Controller {
 	#[Cacheable(prefix: "sitemap", value: '_page', ttl: 86400)]
 	function page(): string {
 		$pages = [
-			'/pages/index/index' => [
+			'/' => [
 				'changefreq' => 'daily',
 				'priority' => '0.7',
 			],
-			'/pages/index/about' => [
+			'/about' => [
 				'changefreq' => 'monthly',
 				'priority' => '0.5',
 			],
