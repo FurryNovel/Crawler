@@ -61,7 +61,7 @@ class NovelController extends FS_Controller {
 			);
 			if (!empty($tags)) {
 				foreach ($tags as $tag) {
-					$query->where(function (\Hyperf\Database\Query\Builder $query) use ($tag, $tags_mode) {
+					$query->where(function (Builder $query) use ($tag, $tags_mode) {
 						$query->where('novel.tags', 'like', '%' . $tag . '%');
 						if ($tags_mode !== 'novel') {
 							$query->whereIn('novel.id', function (\Hyperf\Database\Query\Builder $query) use ($tag) {
