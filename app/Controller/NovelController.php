@@ -39,6 +39,8 @@ class NovelController extends FS_Controller {
 		$order_by = $this->request->input('order_by', 'latest');
 		$order = $this->request->input('order', 'desc');
 		
+		$tags_mode = $this->request->input('tags_mode', 'novel');
+		
 		
 		switch ($order) {
 			case 'desc':
@@ -50,29 +52,26 @@ class NovelController extends FS_Controller {
 		}
 		
 		if (!empty($tags)) {
-			if (count($tags) == 1) {
-				$query->where(function (Builder $query) use ($tags) {
-					$tag = $this->dataSet->convertToPattern(null, $tags)[0] ?? '';
-					$query->where('novel.tags', 'like', '%' . $tag . '%');
-					$query->whereIn('novel.id', function (\Hyperf\Database\Query\Builder $query) use ($tag) {
-						$query->select('novel_id')
-							->from('chapter')
-							->where('chapter.status', Chapter::STATUS_PUBLISH)
-							->where('chapter.tags', 'like', '%' . $tag . '%');
-					}, 'OR');
-				});
-			} else {
-				$tags = array_values(
-					array_slice(
-						$this->dataSet->convertToPattern(null, $tags),
-						0,
-						10
-					)
-				);
-				if (!empty($tags)) {
-					foreach ($tags as $tag) {
+			$tags = array_values(
+				array_slice(
+					$this->dataSet->convertToPattern(null, $tags),
+					0,
+					10
+				)
+			);
+			if (!empty($tags)) {
+				foreach ($tags as $tag) {
+					$query->where(function (\Hyperf\Database\Query\Builder $query) use ($tag, $tags_mode) {
 						$query->where('novel.tags', 'like', '%' . $tag . '%');
-					}
+						if ($tags_mode !== 'novel') {
+							$query->whereIn('novel.id', function (\Hyperf\Database\Query\Builder $query) use ($tag) {
+								$query->select('novel_id')
+									->from('chapter')
+									->where('chapter.status', Chapter::STATUS_PUBLISH)
+									->where('chapter.tags', 'like', '%' . $tag . '%');
+							}, 'OR');
+						}
+					});
 				}
 			}
 		}
