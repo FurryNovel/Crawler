@@ -24,4 +24,9 @@ class FetchQueueService {
 	public function push(array $params, int $delay = 0): bool {
 		return $this->driver->push(new FetchSingleNovelTask($params), $delay);
 	}
+	
+	
+	public function info(): array {
+		return $this->driver->info();
+	}
 }

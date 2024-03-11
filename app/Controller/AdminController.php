@@ -29,6 +29,9 @@ class AdminController extends FS_Controller {
 	#[Inject]
 	protected LanguageService $language;
 	
+	#[Inject]
+	protected FetchQueueService $fetchQueueService;
+	
 	function fetch_novel(string $type, string $rule_novel_id): array {
 		$rule = FetchRule::getRule($type);
 		if (!$rule) {
@@ -46,39 +49,8 @@ class AdminController extends FS_Controller {
 		);
 	}
 	
-	function process_content(string $type, string $content): array {
-		$rule = FetchRule::getRule($type);
-		if (!$rule) {
-			return $this->error('规则不存在');
-		}
-		
-		return $this->success($rule->processContent($content),
-			'请求成功，请耐心等候系统处理'
-		);
-	}
 	
-	function test() {
-		$rule = FetchRule::getRule('pixiv_app');
-		return $this->success($rule->fetchNovelList());
-	}
-	
-	function process_tags() {
-		Novel::chunk(10, function (Collection $novels) {
-			$novels->each(function (Novel $novel) {
-				$novel->doBackground(function () use ($novel) {
-					$tags = $novel->tags;
-					$text = $novel->name . $novel->desc . implode('', $tags);
-					if (!empty($text)) {
-						$language = $this->language->detect($text);
-						$language = str_replace('-', '_', $language);
-						if (str_starts_with($language, 'zh')) {
-							$tags[] = 'zh';
-						}
-						$tags[] = $language;
-					}
-					$novel->tags = array_unique($this->dataSet->convertToPattern(null, $tags));
-				});
-			});
-		});
+	function queue(): array {
+		return $this->success($this->fetchQueueService->info());
 	}
 }
