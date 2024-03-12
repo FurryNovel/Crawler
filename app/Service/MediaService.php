@@ -53,8 +53,8 @@ class MediaService {
 	
 	function getOriginUrl($url): string {
 		$domain = [
-			'i.pixiv.re',
-//			'i.pximg.net'
+			'i.pximg.net',
+			//'i.pixiv.re',
 		][0];
 		return str_replace('{domain}', $domain, $url);
 	}
@@ -78,6 +78,7 @@ class MediaService {
 		}
 		$client = new Client([
 			'headers' => [
+				'Referer' => 'https://www.pixiv.net/',
 				'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) ' .
 					'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36',
 			],
