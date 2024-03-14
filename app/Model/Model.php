@@ -26,6 +26,8 @@ use Psr\Container\NotFoundExceptionInterface;
 abstract class Model extends BaseModel implements CacheableInterface {
 	use Cacheable;
 	
+	protected string $modelLanguage = 'zh';
+	
 	protected array $guarded = [];
 	
 	protected function boot(): void {
@@ -92,4 +94,8 @@ abstract class Model extends BaseModel implements CacheableInterface {
 		});
 	}
 	
+	public function withLanguage(string $language): static {
+		$this->modelLanguage = $language;
+		return $this;
+	}
 }

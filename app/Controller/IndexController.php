@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace App\Controller;
 
-use App\Controller\Abstract\FS_Controller;
+use App\Controller\Abstract\BaseController;
 use App\Controller\Abstract\PublicController;
 use App\DataSet\DataSet;
 use App\FetchRule\FetchRule;
@@ -18,7 +18,7 @@ use Hyperf\HttpServer\Annotation\AutoController;
 use Qbhy\HyperfAuth\AuthManager;
 
 #[AutoController]
-class IndexController extends FS_Controller {
+class IndexController extends BaseController {
 	function ping(): array {
 		return $this->success(
 			[

@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace App\Controller;
 
-use App\Controller\Abstract\FS_Controller;
+use App\Controller\Abstract\BaseController;
 use App\DataSet\DataSet;
 use App\DataSet\LanguageService;
 use App\FetchRule\FetchRule;
@@ -21,7 +21,7 @@ use Hyperf\HttpServer\Annotation\AutoController;
 use Hyperf\HttpServer\Annotation\Middleware;
 
 #[AutoController]
-class AdminController extends FS_Controller {
+class AdminController extends BaseController {
 	
 	#[Inject]
 	protected DataSet $dataSet;

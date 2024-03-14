@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace App\Controller;
 
-use App\Controller\Abstract\FS_Controller;
+use App\Controller\Abstract\BaseController;
 use App\DataSet\DataSet;
 use App\Model\Chapter;
 use App\Model\Novel;
@@ -18,7 +18,8 @@ use Psr\SimpleCache\CacheInterface;
 use function FriendsOfHyperf\Helpers\di;
 
 #[Controller]
-class NovelController extends FS_Controller {
+class NovelController extends BaseController {
+	
 	#[Inject]
 	protected DataSet $dataSet;
 	
@@ -132,8 +133,9 @@ class NovelController extends FS_Controller {
 		}
 		$data = $query->paginate($limit);
 		if ($with_chapters) {
-			$data->getCollection()->each(function (Novel $novel) {
-				$novel->load(['latestChapters']);
+			$data->getCollection()->map(function (Novel $novel) {
+				return $novel->withLanguage($this->modelLanguage)
+					->load(['latestChapters']);
 			});
 		}
 		return $this->success($data, '获取成功');
@@ -145,12 +147,7 @@ class NovelController extends FS_Controller {
 		if (!$novel or $novel->status !== Novel::STATUS_PUBLISH) {
 			return $this->error('小说未公开');
 		}
-		$novel->load(['latestChapters']);
-		//tags不触发getter
-		$novel->tags = $novel->tags ?? [];
-		
-		//
-		$novel->delayInc('view_count', 1);
+		$novel->withLanguage($this->modelLanguage)->load(['latestChapters']);
 		return $this->success($novel);
 	}
 	
@@ -173,13 +170,19 @@ class NovelController extends FS_Controller {
 	#[RequestMapping(path: '{novel_id:\d+}/chapter[/{chapter_id:\d+}]', methods: 'get')]
 	function chapters(string $novel_id, ?string $chapter_id = null): array {
 		if ($chapter_id) {
-			return $this->success(Chapter::findFromCache($chapter_id)->makeVisible('content'));
+			return $this->success(Chapter::findFromCache($chapter_id)
+				->withLanguage($this->modelLanguage)
+				->makeVisible('content'));
 		}
 		return $this->success(
 			Chapter::where(function (Builder $query) use ($novel_id) {
 				$query->where('novel_id', $novel_id);
 				$query->where('status', Chapter::STATUS_PUBLISH);
-			})->get(['id', 'name', 'tags', 'text_count', 'word_count', 'created_at', 'updated_at'])
+			})
+				->get(['id', 'name', 'tags', 'text_count', 'word_count', 'created_at', 'updated_at'])
+				->map(function (Chapter $chapter) {
+					return $chapter->withLanguage($this->modelLanguage);
+				})
 		);
 	}
 	

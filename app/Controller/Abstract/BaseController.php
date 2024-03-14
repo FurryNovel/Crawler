@@ -23,7 +23,7 @@ use Hyperf\Paginator\Paginator;
 use Psr\Container\ContainerInterface;
 use Qbhy\HyperfAuth\AuthManager;
 
-abstract class FS_Controller {
+abstract class BaseController {
 	#[Inject]
 	protected ContainerInterface $container;
 	#[Inject]
@@ -36,6 +36,8 @@ abstract class FS_Controller {
 	protected UserService $userService;
 	#[Inject]
 	protected TranslatorInterface $translator;
+	
+	protected string $modelLanguage = Utils::DEFAULT_LANGUAGE;
 	
 	protected function trans($key): array|string {
 		$this->translator->setLocale(Utils::getVisitorLanguage());

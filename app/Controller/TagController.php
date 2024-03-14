@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace App\Controller;
 
-use App\Controller\Abstract\FS_Controller;
+use App\Controller\Abstract\BaseController;
 use App\DataSet\DataSet;
 use App\Model\Chapter;
 use App\Model\Novel;
@@ -17,7 +17,7 @@ use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\RequestMapping;
 
 #[Controller]
-class TagController extends FS_Controller {
+class TagController extends BaseController {
 	#[Inject]
 	protected DataSet $dataSet;
 	
@@ -27,7 +27,7 @@ class TagController extends FS_Controller {
 	
 	#[RequestMapping(path: '', methods: 'get')]
 	function index(): array {
-		return $this->success($this->tags(Utils::getVisitorLanguage()), '获取成功');
+		return $this->success($this->tags($this->modelLanguage), '获取成功');
 	}
 	
 	

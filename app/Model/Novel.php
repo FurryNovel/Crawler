@@ -91,7 +91,7 @@ class Novel extends Model {
 		if (is_string($value)) {
 			$value = json_decode($value, true);
 		}
-		return $this->dataSet->convertTo(Utils::getVisitorLanguage(), null, (array)$value);
+		return $this->dataSet->convertTo($this->modelLanguage, null, (array)$value);
 	}
 	
 	function setTagsAttribute($value): void {

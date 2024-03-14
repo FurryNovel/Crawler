@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace App\Controller;
 
-use App\Controller\Abstract\FS_Controller;
+use App\Controller\Abstract\BaseController;
 use App\DataSet\DataSet;
 use App\FetchRule\FetchRule;
 use App\Model\Chapter;
@@ -25,7 +25,7 @@ use Qbhy\HyperfAuth\AuthManager;
 use SimpleXMLElement;
 
 #[Controller]
-class SitemapController extends FS_Controller {
+class SitemapController extends BaseController {
 	const ROUTE = [
 		Novel::class => '/novel/%d',
 	];
@@ -172,12 +172,5 @@ class SitemapController extends FS_Controller {
 			->withBody(
 				new SwooleStream($this->index())
 			);
-	}
-	
-	
-	#[RequestMapping(path: '/robots.txt', methods: 'get')]
-	function robots(): string {
-		$src = 'https://' . \Hyperf\Support\env('APP_DOMAIN') . \Hyperf\Support\env('API_ROOT') . '/sitemap/index.xml';
-		return 'sitemap: ' . $src;
 	}
 }
