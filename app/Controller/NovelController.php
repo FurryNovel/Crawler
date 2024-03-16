@@ -134,8 +134,8 @@ class NovelController extends BaseController {
 		$data = $query->paginate($limit);
 		if ($with_chapters) {
 			$data->getCollection()->map(function (Novel $novel) {
-				return $novel->withLanguage($this->modelLanguage)
-					->load(['latestChapters']);
+				return $novel->load(['latestChapters'])
+					->withLanguage($this->modelLanguage);
 			});
 		}
 		return $this->success($data, '获取成功');
@@ -147,7 +147,7 @@ class NovelController extends BaseController {
 		if (!$novel or $novel->status !== Novel::STATUS_PUBLISH) {
 			return $this->error('小说未公开');
 		}
-		$novel->withLanguage($this->modelLanguage)->load(['latestChapters']);
+		$novel->load(['latestChapters'])->withLanguage($this->modelLanguage);
 		return $this->success($novel);
 	}
 	
