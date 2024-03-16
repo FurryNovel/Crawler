@@ -158,10 +158,14 @@ class NovelController extends BaseController {
 		if (!$novel or $novel->status !== Novel::STATUS_PUBLISH) {
 			return $this->error('小说未公开');
 		}
-		if (!in_array($action_name, $novel->getLazy())) {
-			return $this->error('不支持的操作');
+		switch ($action_name) {
+			default:
+				if (!in_array($action_name . '_count', $novel->getLazy())) {
+					return $this->error('不支持的操作');
+				}
+				$novel->delayInc($action_name . '_count', 1);
+				break;
 		}
-		$novel->delayInc($action_name . '_count', 1);
 		return $this->success($novel);
 	}
 	
