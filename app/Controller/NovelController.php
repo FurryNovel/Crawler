@@ -166,7 +166,7 @@ class NovelController extends BaseController {
 				$novel->delayInc($action_name . '_count', 1);
 				break;
 		}
-		return $this->success($novel);
+		return $this->success();
 	}
 	
 	
