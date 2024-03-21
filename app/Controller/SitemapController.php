@@ -26,6 +26,17 @@ use SimpleXMLElement;
 
 #[Controller]
 class SitemapController extends BaseController {
+	const SUPPORT_LANGUAGES = [
+		[
+			'code' => 'zh-CN',
+			'route' => 'zh',
+		],
+		[
+			'code' => 'en-US',
+			'route' => 'en',
+		],
+	];
+	
 	const ROUTE = [
 		Novel::class => '/novel/%d',
 	];
@@ -93,18 +104,8 @@ class SitemapController extends BaseController {
 		
 		$items = \Hyperf\Collection\Collection::make(Novel::paginate(self::MAX_PAGE, ['*'], 'page', $page)->items());
 		$items->each(function (Novel $novel) use ($root) {
-			$src = 'https://' . \Hyperf\Support\env('APP_DOMAIN') . sprintf(self::ROUTE[Novel::class], $novel->id);
-			
-			$url = $root->addChild('url');
-			$url->addChild('loc', $src);
-			$url->addChild('lastmod', $novel->updated_at->toAtomString());
-			$url->addChild('changefreq', 'daily');
-			$url->addChild('priority', '0.8');
-			
-			$link = $url->addChild('xhtml:link', null, 'xhtml');
-			$link->addAttribute('rel', 'alternate');
-			$link->addAttribute('hreflang', 'zh-CN');
-			$link->addAttribute('href', $src);
+			$src = sprintf(self::ROUTE[Novel::class], $novel->id);
+			$this->builder($root, $src, $novel->updated_at->toAtomString());
 		});
 		return $this->withXml([], $root);
 	}
@@ -132,17 +133,7 @@ class SitemapController extends BaseController {
 		$root->addAttribute('xmlns:xhtml', 'http://www.w3.org/1999/xhtml', 'xmlns');
 		
 		foreach ($pages as $page => $info) {
-			$src = 'https://' . \Hyperf\Support\env('APP_DOMAIN') . $page;
-			$url = $root->addChild('url');
-			$url->addChild('loc', $src);
-			$url->addChild('lastmod', Carbon::today()->toAtomString());
-			$url->addChild('changefreq', $info['changefreq']);
-			$url->addChild('priority', $info['priority']);
-			
-			$link = $url->addChild('xhtml:link', null, 'xhtml');
-			$link->addAttribute('rel', 'alternate');
-			$link->addAttribute('hreflang', 'zh-CN');
-			$link->addAttribute('href', $src);
+			$this->builder($root, $page, Carbon::today()->toAtomString());
 		}
 		return $this->withXml([], $root);
 	}
@@ -172,5 +163,25 @@ class SitemapController extends BaseController {
 			->withBody(
 				new SwooleStream($this->index())
 			);
+	}
+	
+	protected function builder(
+		SimpleXMLElement $root,
+		string           $src,
+		string           $modified,
+	): void {
+		foreach (self::SUPPORT_LANGUAGES as $lang) {
+			$targetSrc = 'https://' . \Hyperf\Support\env('APP_DOMAIN') . '/' . $lang['route'] . $src;
+			$url = $root->addChild('url');
+			$url->addChild('loc', $targetSrc);
+			$url->addChild('lastmod', $modified);
+			$url->addChild('changefreq', 'daily');
+			$url->addChild('priority', '0.8');
+			
+			$link = $url->addChild('xhtml:link', null, 'xhtml');
+			$link->addAttribute('rel', 'alternate');
+			$link->addAttribute('hreflang', $lang['code']);
+			$link->addAttribute('href', $targetSrc);
+		}
 	}
 }
