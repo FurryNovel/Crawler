@@ -131,16 +131,17 @@ class NovelController extends BaseController {
 		if ($limit > 30 || $limit < 1) {
 			$limit = 15;
 		}
-		$data = $query->paginate($limit)
-			->getCollection()
+		$data = $query->paginate($limit);
+		$items = $data->getCollection()
 			->map(function (Novel $novel) {
 				return $novel->withLanguage($this->modelLanguage);
 			});
 		if ($with_chapters) {
-			$data = $data->map(function (Novel $novel) {
+			$items = $items->map(function (Novel $novel) {
 				return $novel->load(['latestChapters']);
 			});
 		}
+		$data = $data->setCollection($items);
 		return $this->success($data, '获取成功');
 	}
 	
