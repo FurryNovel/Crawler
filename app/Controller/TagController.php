@@ -33,8 +33,9 @@ class TagController extends BaseController {
 	
 	#[Cacheable(prefix: __CLASS__, value: '_#{lang}', ttl: 3600)]
 	private function tags($lang): array {
-		return $this->baseQuery()->select()->get()->each(function (Tag $tag) use ($lang) {
+		return $this->baseQuery()->select()->get()->map(function (Tag $tag) use ($lang) {
 			$tag->name = $this->dataSet->convertTo($lang, null, [$tag->name])[0] ?? $tag->name;
+			return $tag;
 		})->toArray();
 	}
 }

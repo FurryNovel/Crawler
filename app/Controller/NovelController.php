@@ -137,6 +137,10 @@ class NovelController extends BaseController {
 				return $novel->load(['latestChapters'])
 					->withLanguage($this->modelLanguage);
 			});
+		} else {
+			$data->getCollection()->map(function (Novel $novel) {
+				return $novel->withLanguage($this->modelLanguage);
+			});
 		}
 		return $this->success($data, '获取成功');
 	}
