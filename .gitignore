@@ -14,3 +14,4 @@ vendor/
 .vscode/
 /composer.lock
 /.github/
+/app/DataSet/library/
