@@ -35,6 +35,10 @@ class SitemapController extends BaseController {
 			'code' => 'en-US',
 			'route' => 'en',
 		],
+		[
+			'code' => 'ja-JP',
+			'route' => 'ja',
+		],
 	];
 	
 	const ROUTE = [
