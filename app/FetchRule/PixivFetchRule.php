@@ -216,7 +216,11 @@ class PixivFetchRule extends FetchRule {
 				$chapter['textCount'] ?? 0,
 				$chapter['wordCount'] ?? 0,
 				[],
-				$chapter['content']
+				$chapter['content'],
+				[
+					'novelId' => $response['body']['seriesNavData']['seriesId'] ?? null,
+					'chapter' => $chapter,
+				],
 			);
 		})->otherwise(function (\Throwable $e) {
 			return null;
@@ -372,5 +376,51 @@ class PixivFetchRule extends FetchRule {
 		})->otherwise(function (\Throwable $e) {
 			return [];
 		})->wait();
+	}
+	
+	
+	function convertOneshotToNovel(ChapterInfo $chapterInfo): ?NovelInfo {
+		if (!empty($chapterInfo->ext_data['novelId'])) {
+			return null;
+		}
+		if (empty($chapterInfo->ext_data['chapter'])) {
+			return null;
+		}
+		$chapter = $chapterInfo->ext_data['chapter'];
+		$tags = array_column($chapter['tags']['tags'] ?? [], 'tag');
+		if ($chapter['aiType'] == 2) {
+			$tags[] = 'AI Generated';
+		}
+		if ($chapter['language']) {
+			$tags[] = $chapter['language'];
+		}
+		if (isset($novel['xRestrict'])) {
+			switch ($novel['xRestrict']) {
+				case 0:
+					$tags[] = 'SFW';
+					break;
+				case 1:
+					$tags[] = 'NSFW';
+					$tags[] = 'R-18';
+					break;
+				case 2:
+					$tags[] = 'NSFW';
+					$tags[] = 'R-18G';
+					break;
+			}
+		}
+		return new NovelInfo(
+			$chapter['id'],
+			$chapterInfo->name,
+			$chapter['userName'] ?? '',
+			$chapter['userId'],
+			$chapter['coverUrl'] ?? '',
+			$chapter['description'] ?? '',
+			$tags,
+			[
+				'oneshotId' => crc32($chapter['id']),
+				'oneshot' => true,
+			]
+		);
 	}
 }
