@@ -4,6 +4,7 @@ namespace App\FetchRule;
 
 use App\FetchRule\FetchRule;
 use App\Utils\BilibiliSignature;
+use App\Utils\Utils;
 use DOMNode;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
@@ -71,6 +72,7 @@ class BilibiliFetchRule extends FetchRule {
 				]
 			);
 		})->otherwise(function (\Throwable $e) {
+			Utils::err($e);
 			return null;
 		})->wait();
 	}
@@ -95,11 +97,13 @@ class BilibiliFetchRule extends FetchRule {
 					$chapter['words'] ?? 0,
 					$chapter['words'] ?? 0,
 					[],
-					null
+					null,
+					[]
 				);
 			}, $chapters);
 		})->otherwise(function (\Throwable $e) {
-			return null;
+			Utils::err($e);
+			return [];
 		})->wait();
 	}
 	
@@ -123,9 +127,11 @@ class BilibiliFetchRule extends FetchRule {
 				$chapter['words'] ?? 0,
 				$chapter['words'] ?? 0,
 				[],
-				$content
+				$content,
+				[]
 			);
 		})->otherwise(function (\Throwable $e) {
+			Utils::err($e);
 			return null;
 		})->wait();
 	}
@@ -206,6 +212,7 @@ class BilibiliFetchRule extends FetchRule {
 				$author['sign']
 			);
 		})->otherwise(function (\Throwable $e) {
+			Utils::err($e);
 			return null;
 		})->wait();
 	}

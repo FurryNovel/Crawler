@@ -164,7 +164,7 @@ class ChapterInfo {
 	public array $tags;
 	public array $ext_data;
 	
-	public function __construct(string $id, string $name, string $cover, int $text_count, int $word_count, array $tags, ?string $content, ?array $ext_data = null) {
+	public function __construct(string $id, string $name, string $cover, int $text_count, int $word_count, array $tags, ?string $content, array $ext_data = []) {
 		$this->id = $id;
 		$this->name = $name;
 		$this->cover = $cover;
