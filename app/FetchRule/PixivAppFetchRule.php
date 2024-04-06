@@ -166,4 +166,34 @@ class PixivAppFetchRule extends PixivFetchRule {
 				return [];
 			})->wait();
 	}
+	
+	//https://app-api.pixiv.net/v1/search/user?word=唐门&filter=for_ios&sort=date_desc
+	function fetchAuthorList(string $name): array {
+		return $this->getRequest()
+			->getAsync('ttps://app-api.pixiv.net/v1/search/user', [
+				'query' => [
+					'word' => $name,
+					'filter' => 'for_ios',
+					'sort' => 'date_desc',
+				],
+			])->then(function (ResponseInterface $response) {
+				$response = $response->getBody()->getContents();
+				$data = json_decode($response, true);
+				return array_map(function ($data) {
+					$user = $data['user'];
+					return new AuthorInfo(
+						$user['id'],
+						$user['profile_image_urls']['medium'],
+						$user['name'],
+						'-'
+					);
+				}, $data['user_previews'] ?? []);
+			})->otherwise(function (\Throwable $e) {
+				return [];
+			})->wait();
+		
+	}
+	
+	
+	//https://app-api.pixiv.net/v1/user/novels?user_id=16721009&restrict=public&offset=0
 }
