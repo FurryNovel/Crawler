@@ -49,7 +49,7 @@ class LibraryController extends BaseController {
 	}
 	
 	
-	function push($url): array {
+	function push($url, $strict = false): array {
 		$token = $this->request->header('Authorization', 'Bearer ');
 		$token = str_replace('Bearer ', '', $token);
 		if (!$token or strcmp($token, env('THIRD_TOKEN')) !== 0) {
@@ -85,6 +85,13 @@ class LibraryController extends BaseController {
 					} else {
 						$novelInfo = $rule->convertOneshotToNovel($chapterInfo);
 						if ($novelInfo) {
+							$patterns = $this->dataSet->convertToPattern(null, $novelInfo->tags ?? []);
+							if ($strict and (
+									in_array('Furry', $patterns)
+									or in_array('Gay furry', $patterns)
+								)) {
+								return $this->error('暂不支持其他类型的小说');
+							}
 							$novel = Novel::fromFetchRule($rule, $novelInfo);
 							return $this->success($novel,
 								'请求成功，请耐心等候系统处理'
@@ -96,6 +103,13 @@ class LibraryController extends BaseController {
 					$novelInfo = $rule->fetchNovelDetail((string)$novelId);
 					if (!$novelInfo) {
 						return $this->error('小说不存在');
+					}
+					$patterns = $this->dataSet->convertToPattern(null, $novelInfo->tags ?? []);
+					if ($strict and (
+							in_array('Furry', $patterns)
+							or in_array('Gay furry', $patterns)
+						)) {
+						return $this->error('暂不支持其他类型的小说');
 					}
 					$novel = Novel::fromFetchRule($rule, $novelInfo);
 					return $this->success($novel,
