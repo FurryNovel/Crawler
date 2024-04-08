@@ -106,10 +106,9 @@ abstract class FetchRule {
 	/**
 	 * 获取作者小说列表
 	 * @param string $authorId
-	 * @param string $page
 	 * @return NovelInfo[]
 	 */
-	abstract function fetchAuthorNovelList(string $authorId, string $page = '1'): array;
+	abstract function fetchAuthorNovelList(string $authorId): array;
 	
 	/**
 	 * 获取作者列表

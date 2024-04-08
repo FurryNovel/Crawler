@@ -167,10 +167,16 @@ class PixivAppFetchRule extends PixivFetchRule {
 			})->wait();
 	}
 	
-	//https://app-api.pixiv.net/v1/search/user?word=唐门&filter=for_ios&sort=date_desc
+	/**
+	 * @param string $name
+	 * @return array
+	 * @deprecated 不建议使用
+	 */
 	function fetchAuthorList(string $name): array {
+		//https://app-api.pixiv.net/v1/search/user?word=唐门&filter=for_ios&sort=date_desc
+		//https://www.pixiv.net/ajax/user/16721009?full=1&lang=zh
 		return $this->getRequest()
-			->getAsync('ttps://app-api.pixiv.net/v1/search/user', [
+			->getAsync('https://app-api.pixiv.net/v1/search/user', [
 				'query' => [
 					'word' => $name,
 					'filter' => 'for_ios',
@@ -185,15 +191,134 @@ class PixivAppFetchRule extends PixivFetchRule {
 						$user['id'],
 						$user['profile_image_urls']['medium'],
 						$user['name'],
-						'-'
+						''
 					);
 				}, $data['user_previews'] ?? []);
 			})->otherwise(function (\Throwable $e) {
 				return [];
 			})->wait();
-		
 	}
 	
 	
-	//https://app-api.pixiv.net/v1/user/novels?user_id=16721009&restrict=public&offset=0
+	function fetchAuthorNovelList(string $authorId): array {
+		$chapters = [];
+		$page = 1;
+		do {
+			$data = $this->getRequest()
+				->getAsync('https://app-api.pixiv.net/v1/user/novels', [
+					'query' => [
+						'user_id' => $authorId,
+						'offset' => ($page - 1) * 30,
+					],
+				])->then(function (ResponseInterface $response) {
+					$response = $response->getBody()->getContents();
+					$data = json_decode($response, true);
+					return $data['novels'] ?? [];
+				})->otherwise(function (\Throwable $e) {
+					return [];
+				})->wait();
+			$chapters = array_merge($chapters, $data);
+			$page++;
+		} while (!empty($data));
+		
+		$novels = [];
+		$series = [];
+		foreach ($chapters as $chapter) {
+			if (!empty($chapter['series'])) {
+				if (in_array($chapter['series']['id'], $series)) {
+					continue;
+				}
+				$series[] = $chapter['series']['id'];
+				continue;
+			}
+			$tags = $chapter['tags'] ?? [];
+			$tags = array_column($tags, 'name') + array_column($tags, 'translated_name');
+			if ($chapter['novel_ai_type'] == 2) {
+				$tags[] = 'AI Generated';
+			}
+			if (isset($chapter['x_restrict'])) {
+				switch ($chapter['x_restrict']) {
+					case 0:
+						$tags[] = 'SFW';
+						break;
+					case 1:
+						$tags[] = 'NSFW';
+						$tags[] = 'R-18';
+						break;
+					case 2:
+						$tags[] = 'NSFW';
+						$tags[] = 'R-18G';
+						break;
+				}
+			}
+			$novels[] = new NovelInfo(
+				$chapter['id'],
+				$chapter['title'],
+				$chapter['user']['name'] ?? '',
+				$chapter['user']['id'],
+				$chapter['image_urls']['large'] ?? '',
+				$chapter['caption'] ?? '',
+				$tags,
+				[
+					'oneshotId' => crc32($chapter['id']),
+					'oneshot' => true,
+				]
+			);
+		}
+		foreach ($series as $id) {
+			$novels[] = $this->getRequest()
+				->getAsync('https://www.pixiv.net/ajax/novel/series/' . $id, [
+					'query' => [
+						'lang' => 'zh',
+						'version' => '471f117fcde85f9ce382c9d945dc8dd854ff4358',
+					],
+				])->then(function (ResponseInterface $response) {
+					$response = $response->getBody()->getContents();
+					$data = json_decode($response, true);
+					$novel = $data['body'] ?? null;
+					if (empty($data)) {
+						return null;
+					}
+					$tags = $novel['tags'] ?? [];
+					if ($novel['aiType'] == 2) {
+						$tags[] = 'AI Generated';
+					}
+					if ($novel['language']) {
+						$tags[] = $novel['language'];
+					}
+					if (isset($novel['xRestrict'])) {
+						switch ($novel['xRestrict']) {
+							case 0:
+								$tags[] = 'SFW';
+								break;
+							case 1:
+								$tags[] = 'NSFW';
+								$tags[] = 'R-18';
+								break;
+							case 2:
+								$tags[] = 'NSFW';
+								$tags[] = 'R-18G';
+								break;
+						}
+					}
+					return new NovelInfo(
+						$novel['id'],
+						$novel['title'],
+						$novel['userName'],
+						$novel['userId'],
+						$novel['cover']['urls']['original'] ?? '',
+						$novel['caption'] ?? '',
+						$tags,
+						[
+							'oneshot' => false,
+						]
+					);
+				})->otherwise(function (\Throwable $e) {
+					return null;
+				})->wait();
+		}
+		return array_filter($novels, function ($novel) {
+			return !empty($novel);
+		});
+	}
 }

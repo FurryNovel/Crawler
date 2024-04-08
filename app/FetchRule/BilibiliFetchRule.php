@@ -217,7 +217,7 @@ class BilibiliFetchRule extends FetchRule {
 		})->wait();
 	}
 	
-	function fetchAuthorNovelList(string $authorId, string $page = '1'): array {
+	function fetchAuthorNovelList(string $authorId): array {
 		return [];
 	}
 	

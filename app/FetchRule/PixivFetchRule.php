@@ -249,7 +249,7 @@ class PixivFetchRule extends FetchRule {
 		})->wait();
 	}
 	
-	function fetchAuthorNovelList(string $authorId, string $page = '1'): array {
+	function fetchAuthorNovelList(string $authorId): array {
 		//需要登录
 		//https://www.pixiv.net/ajax/user/91465092/profile/all?lang=zh&version=0dae9f9dd5ed344926141ec0520331d086ada703
 		return $this->getRequest()->getAsync('/ajax/user/' . $authorId . '/profile/all', [
