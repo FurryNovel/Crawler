@@ -49,6 +49,9 @@ class Novel extends Model {
 	
 	const STATUS_PENDING = 'pending';
 	const STATUS_PUBLISH = 'publish';
+	const STATUS_SUSPEND = 'suspend';
+	const STATUS_TRASH = 'trash';
+	
 	protected ?string $table = 'novel';
 	
 	protected array $with = [

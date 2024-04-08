@@ -24,7 +24,11 @@ class NovelController extends BaseController {
 	protected DataSet $dataSet;
 	
 	protected function baseQuery(): Builder {
-		$query = Novel::where('novel.status', Novel::STATUS_PUBLISH);
+		$query = Novel::where(function (Builder $query) {
+			$query->whereIn('novel.status', [
+				Novel::STATUS_PUBLISH
+			]);
+		});
 		
 		$ids = $this->request->input('ids');
 		$tags = array_values(array_filter($this->request->input('tags', []), 'App\Utils\Utils::filterLike'));
@@ -148,7 +152,7 @@ class NovelController extends BaseController {
 	#[RequestMapping(path: '{novel_id:\d+}', methods: 'get')]
 	function novel(string $novel_id): array {
 		$novel = Novel::findFromCache($novel_id);
-		if (!$novel or $novel->status !== Novel::STATUS_PUBLISH) {
+		if (!$novel or !in_array($novel->status, [Novel::STATUS_PUBLISH, Novel::STATUS_SUSPEND])) {
 			return $this->error('小说未公开');
 		}
 		$novel->load(['latestChapters']);
@@ -159,7 +163,7 @@ class NovelController extends BaseController {
 	#[RequestMapping(path: '{novel_id:\d+}/action/{action_name}')]
 	function action(string $novel_id, string $action_name): array {
 		$novel = Novel::findFromCache($novel_id);
-		if (!$novel or $novel->status !== Novel::STATUS_PUBLISH) {
+		if (!$novel or !in_array($novel->status, [Novel::STATUS_PUBLISH, Novel::STATUS_SUSPEND])) {
 			return $this->error('小说未公开');
 		}
 		switch ($action_name) {
