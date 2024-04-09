@@ -108,6 +108,9 @@ class SitemapController extends BaseController {
 		
 		$items = \Hyperf\Collection\Collection::make(Novel::paginate(self::MAX_PAGE, ['*'], 'page', $page)->items());
 		$items->each(function (Novel $novel) use ($root) {
+			if ($novel->status !== Novel::STATUS_PUBLISH) {
+				return;
+			}
 			$src = sprintf(self::ROUTE[Novel::class], $novel->id);
 			$this->builder($root, $src, $novel->updated_at->toAtomString());
 		});
