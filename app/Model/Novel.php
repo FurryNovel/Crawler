@@ -161,6 +161,12 @@ class Novel extends Model {
 					],
 			]);
 			$novel->updateTags($novelInfo->tags);
+			if (
+				in_array('禁止转载', $novelInfo->tags)
+				or str_contains($novel->desc, '禁止转载')
+			) {
+				$novel->status = Novel::STATUS_SUSPEND;
+			}
 			$novel->save();
 		}
 		if (!$novel->sync_status) {
